@@ -1,0 +1,36 @@
+# ---- Python / uv (server/) ----
+__pycache__/
+*.py[cod]
+.venv/
+server/.venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# ---- Secrets / env ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---- Flutter / Dart (app/) ----
+app/.dart_tool/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/build/
+app/.idea/
+app/android/.gradle/
+app/android/local.properties
+app/android/key.properties
+app/*.keystore
+app/*.jks
+app/ios/Pods/
+app/**/GeneratedPluginRegistrant.*
+
+# ---- IDE / OS ----
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

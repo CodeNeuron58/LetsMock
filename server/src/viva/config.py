@@ -1,0 +1,68 @@
+"""Typed settings loaded from the environment / .env.
+
+`console` mode only needs the Groq + Deepgram keys (STT/LLM/TTS still hit the
+cloud); the LiveKit credentials are only required once a real client connects,
+so they are optional here and the LiveKit worker validates them itself.
+"""
+
+from __future__ import annotations
+
+from functools import lru_cache
+
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    # --- Model providers (required) ---
+    groq_api_key: str
+    deepgram_api_key: str
+
+    # --- LiveKit (optional for console; required for dev/prod workers) ---
+    livekit_url: str | None = None
+    livekit_api_key: str | None = None
+    livekit_api_secret: str | None = None
+
+    # --- Models ---
+    # STT: Deepgram Nova-3 (streaming = low latency; keeps filler words for the
+    # scorecard; supports keyterm biasing for accents/domain terms).
+    stt_model: str = "nova-3"
+    llm_model: str = "llama-3.3-70b-versatile"
+    tts_model: str = "aura-2-andromeda-en"
+
+    # Bias STT toward interview vocabulary — the fix for accent mishears
+    # like "role" -> "rule". Extend freely.
+    stt_keyterms: list[str] = Field(
+        default_factory=lambda: [
+            "role",
+            "resume",
+            "internship",
+            "placement",
+            "recruiter",
+            "SDE",
+            "DBMS",
+            "API",
+            "backend",
+            "frontend",
+            "startup",
+        ]
+    )
+
+    # --- Turn-taking / barge-in tuning ---
+    # The "patience" dials: how long to wait after speech before deciding the
+    # candidate is done. Erring patient keeps us from cutting off nervous pauses.
+    allow_interruptions: bool = True
+    min_endpointing_delay: float = 0.5
+    max_endpointing_delay: float = 6.0
+    min_interruption_duration: float = 0.5
+
+    # Which interview to run (until the client picks one per-session).
+    default_mode: str = "hr"
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """Cached settings singleton (reads env / .env once)."""
+    return Settings()  # type: ignore[call-arg]  # fields come from the environment

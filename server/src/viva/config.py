@@ -32,20 +32,59 @@ class Settings(BaseSettings):
     llm_model: str = "llama-3.3-70b-versatile"
     tts_model: str = "aura-2-andromeda-en"
 
-    # Bias STT toward interview vocabulary — the fix for accent mishears
-    # like "role" -> "rule". Extend freely.
+    # Bias STT toward domain vocabulary — the fix for accent mishears where a
+    # rare technical term loses to a common word ("Gemini" -> "Gmail",
+    # "tool calling" -> "tool pulling"). Deepgram keyterm supports multi-word
+    # phrases. Keep it focused; expand as new mangles show up in transcripts.
     stt_keyterms: list[str] = Field(
         default_factory=lambda: [
+            # Interview / placement
             "role",
             "resume",
             "internship",
             "placement",
             "recruiter",
+            "fresher",
             "SDE",
-            "DBMS",
+            "HR round",
+            "behavioral",
+            "STAR method",
+            "CTC",
+            "NQT",
+            # Backend / infra
             "API",
+            "REST",
+            "GraphQL",
             "backend",
             "frontend",
+            "microservices",
+            "WebSocket",
+            "Docker",
+            "Kubernetes",
+            "Postgres",
+            "Redis",
+            "DBMS",
+            "latency",
+            # AI / ML stack
+            "LLM",
+            "RAG",
+            "embeddings",
+            "vector database",
+            "Pydantic",
+            "FastAPI",
+            "LangGraph",
+            "cascade",
+            "tool calling",
+            "Gemini",
+            "Whisper",
+            "Silero",
+            "Deepgram",
+            "LiveKit",
+            # Languages / product
+            "Python",
+            "TypeScript",
+            "Yumii",
+            "Viva",
             "startup",
         ]
     )

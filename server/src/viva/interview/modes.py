@@ -7,6 +7,7 @@ is *about*) and an `opening` instruction (how to kick it off).
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
 from enum import Enum
 
@@ -109,3 +110,19 @@ def get_mode(key: str | Mode) -> InterviewMode:
         return MODES[Mode(key)]
     except (ValueError, KeyError):
         return MODES[Mode.HR]
+
+
+def room_name_for(mode: str | Mode) -> str:
+    """Room name that carries the mode so the agent can pick it up, e.g.
+    'viva-hr-a1b2c3d4'. Unknown modes fall back to HR (via get_mode)."""
+    m = get_mode(mode)
+    return f"viva-{m.key.value}-{uuid.uuid4().hex[:8]}"
+
+
+def mode_from_room_name(name: str) -> InterviewMode:
+    """Recover the mode from a room name built by `room_name_for`. Anything
+    unexpected (e.g. the console mock room) falls back to HR."""
+    parts = name.split("-")
+    if len(parts) >= 2 and parts[0] == "viva":
+        return get_mode(parts[1])
+    return MODES[Mode.HR]

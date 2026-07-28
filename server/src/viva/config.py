@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     llm_model: str = "llama-3.3-70b-versatile"
     tts_model: str = "aura-2-andromeda-en"
 
+    # Stronger model for the async post-call scorecard (latency doesn't matter here).
+    scorecard_model: str = "llama-3.3-70b-versatile"
+
     # Bias STT toward domain vocabulary — the fix for accent mishears where a
     # rare technical term loses to a common word ("Gemini" -> "Gmail",
     # "tool calling" -> "tool pulling"). Deepgram keyterm supports multi-word

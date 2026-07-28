@@ -1,9 +1,21 @@
 """Async post-call scoring: turn the transcript into a Pydantic scorecard.
 
-Stub for now — the schema is defined so the shape is fixed; wiring the LLM pass
-that fills it is a later milestone.
+Deterministic delivery metrics are computed in code; the qualitative judgement
+comes from the LLM as schema-validated JSON.
 """
 
-from viva.scoring.schema import AnswerEvaluation, Scorecard
+from viva.scoring.generate import generate_scorecard
+from viva.scoring.metrics import compute_metrics
+from viva.scoring.schema import AnswerEvaluation, Assessment, Scorecard, SpeechMetrics
+from viva.scoring.transcript import Transcript, Turn
 
-__all__ = ["AnswerEvaluation", "Scorecard"]
+__all__ = [
+    "AnswerEvaluation",
+    "Assessment",
+    "Scorecard",
+    "SpeechMetrics",
+    "Transcript",
+    "Turn",
+    "compute_metrics",
+    "generate_scorecard",
+]

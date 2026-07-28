@@ -3,6 +3,7 @@ import 'package:livekit_client/livekit_client.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'config.dart';
+import 'scorecard_screen.dart';
 import 'session_api.dart';
 
 /// The live interview call. On open it: asks for the mic, gets a token from the
@@ -19,17 +20,18 @@ class CallScreen extends StatefulWidget {
 }
 
 class _CallScreenState extends State<CallScreen> {
-  final Room _room = Room();
+  final Room _lkRoom = Room();
   EventsListener<RoomEvent>? _listener;
 
   String _status = 'Getting ready…';
   bool _connected = false;
   bool _failed = false;
+  String? _roomName; // set once the session exists; needed to fetch the scorecard
 
   @override
   void initState() {
     super.initState();
-    _room.addListener(_onRoomChanged); // rebuild on connection-state changes
+    _lkRoom.addListener(_onRoomChanged); // rebuild on connection-state changes
     _start();
   }
 
@@ -44,18 +46,19 @@ class _CallScreenState extends State<CallScreen> {
       // 2. Token from the backend.
       _setStatus('Setting up your interview…');
       final session = await createSession(widget.mode);
+      _roomName = session.room;
 
       // 3. Wire up room events, then connect.
-      _listener = _room.createListener()
+      _listener = _lkRoom.createListener()
         ..on<RoomConnectedEvent>((_) => _setStatus('Connected', connected: true))
         ..on<RoomDisconnectedEvent>((_) => _setStatus('Interview ended'))
         ..on<TrackSubscribedEvent>((_) => _refresh());
 
       _setStatus('Connecting to your interviewer…');
-      await _room.connect(session.url, session.token);
+      await _lkRoom.connect(session.url, session.token);
 
       // 4. Publish the microphone so the interviewer can hear you.
-      await _room.localParticipant?.setMicrophoneEnabled(true);
+      await _lkRoom.localParticipant?.setMicrophoneEnabled(true);
     } catch (e) {
       _fail('Could not start the interview.\n$e');
     }
@@ -84,21 +87,36 @@ class _CallScreenState extends State<CallScreen> {
   }
 
   Future<void> _hangUp() async {
-    await _room.disconnect();
-    if (mounted) Navigator.of(context).pop();
+    // Capture the navigator before awaiting — `context` is not safe across the gap.
+    final navigator = Navigator.of(context);
+    final room = _roomName;
+
+    await _lkRoom.disconnect();
+    if (!mounted) return;
+
+    // Scoring only starts once the agent leaves the room, so hand the room name
+    // to the scorecard screen and let it poll. Nothing to score if we never
+    // got as far as connecting.
+    if (room != null && _connected) {
+      navigator.pushReplacement(
+        MaterialPageRoute(builder: (_) => ScorecardScreen(room: room)),
+      );
+    } else {
+      navigator.pop();
+    }
   }
 
   @override
   void dispose() {
-    _room.removeListener(_onRoomChanged);
+    _lkRoom.removeListener(_onRoomChanged);
     _listener?.dispose();
-    _room.dispose(); // also disconnects
+    _lkRoom.dispose(); // also disconnects
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final interviewerPresent = _room.remoteParticipants.isNotEmpty;
+    final interviewerPresent = _lkRoom.remoteParticipants.isNotEmpty;
     return Scaffold(
       backgroundColor: const Color(0xFF0E1116),
       body: SafeArea(

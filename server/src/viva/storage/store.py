@@ -17,11 +17,17 @@ def create_interview(room: str, mode: str) -> None:
 
 
 def save_scorecard(room: str, scorecard: Scorecard) -> None:
-    """Attach a finished scorecard to its interview (no-op if the room is gone)."""
+    """Attach a finished scorecard to its interview.
+
+    Creates the row if it is missing: the agent can run in a room the API never
+    issued a token for (console mode, or a directly dispatched job), and that
+    interview still happened and is still worth keeping.
+    """
     with new_session() as db:
         interview = db.get(Interview, room)
         if interview is None:
-            return
+            interview = Interview(room=room, mode=scorecard.mode)
+            db.add(interview)
         interview.scorecard = scorecard.model_dump(mode="json")
         interview.status = InterviewStatus.scored
         interview.scored_at = datetime.now(timezone.utc)

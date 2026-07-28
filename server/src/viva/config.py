@@ -103,6 +103,11 @@ class Settings(BaseSettings):
     # Which interview to run (until the client picks one per-session).
     default_mode: str = "hr"
 
+    # Where interviews and scorecards are stored. SQLite by default so there is
+    # nothing to run locally; point at Postgres in production
+    # (postgresql+psycopg://user:pass@host/db) — no code changes needed.
+    database_url: str = "sqlite:///./viva.db"
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -7,6 +7,10 @@ server/.venv/
 .pytest_cache/
 .ruff_cache/
 
+# ---- Local database ----
+*.db
+*.db-journal
+
 # ---- Secrets / env ----
 .env
 .env.*

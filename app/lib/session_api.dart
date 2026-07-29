@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import 'config.dart';
 import 'scorecard.dart';
@@ -64,6 +65,48 @@ Future<SessionInfo> createSession(InterviewMode mode) async {
     throw Exception('Session request failed (${res.statusCode}): ${res.body}');
   }
   return SessionInfo.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+}
+
+/// What resume, if any, the server has on file for this user.
+class ResumeInfo {
+  const ResumeInfo({required this.filename, required this.characters});
+
+  final String filename;
+  final int characters;
+
+  factory ResumeInfo.fromJson(Map<String, dynamic> j) => ResumeInfo(
+        filename: j['filename'] as String? ?? 'resume.pdf',
+        characters: (j['characters'] as num?)?.toInt() ?? 0,
+      );
+}
+
+/// The resume on file, or null if none has been uploaded.
+Future<ResumeInfo?> fetchResume() async {
+  final userId = await Subscriptions.userId();
+  final res = await http.get(
+    Uri.parse('${AppConfig.backendBaseUrl}/resume/$userId'),
+  );
+  if (res.statusCode != 200 || res.body.trim() == 'null') return null;
+  return ResumeInfo.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
+}
+
+/// Upload a resume PDF. Throws with the server's message if it is unusable
+/// (wrong type, too big, or a scan with no text layer).
+Future<ResumeInfo> uploadResume(String path, String filename) async {
+  final req = http.MultipartRequest(
+    'POST',
+    Uri.parse('${AppConfig.backendBaseUrl}/resume'),
+  )
+    ..fields['user_id'] = await Subscriptions.userId()
+    ..files.add(await http.MultipartFile.fromPath('file', path,
+        filename: filename, contentType: MediaType('application', 'pdf')));
+
+  final res = await http.Response.fromStream(await req.send());
+  if (res.statusCode != 200) {
+    final detail = jsonDecode(res.body)['detail'];
+    throw Exception(detail is String ? detail : 'Upload failed (${res.statusCode}).');
+  }
+  return ResumeInfo.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
 }
 
 /// Thrown when the interview finished but the server could not score it.

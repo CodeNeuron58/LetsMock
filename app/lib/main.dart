@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'call_screen.dart';
 import 'config.dart';
+import 'resume_card.dart';
 import 'subscriptions.dart';
 
 Future<void> main() async {
@@ -53,6 +54,8 @@ class HomeScreen extends StatelessWidget {
                   .bodyMedium
                   ?.copyWith(color: Colors.black54),
             ),
+            const SizedBox(height: 16),
+            const ResumeCard(),
             const SizedBox(height: 20),
             for (final mode in InterviewMode.values)
               Padding(

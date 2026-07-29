@@ -10,7 +10,8 @@ from livekit.agents import JobContext
 from viva.agent.interviewer import Interviewer
 from viva.agent.session import build_session
 from viva.config import get_settings
-from viva.interview.modes import InterviewMode, mode_from_room_name
+from viva.interview.flow import run_interview_clock
+from viva.interview.modes import InterviewMode, parse_room_name
 from viva.scoring.generate import generate_scorecard
 from viva.scoring.recorder import TranscriptRecorder
 from viva.storage import mark_failed, save_scorecard
@@ -24,10 +25,13 @@ async def entrypoint(ctx: JobContext) -> None:
 
     await ctx.connect()
 
-    # The token server encodes the mode in the room name (viva-<mode>-<id>);
-    # the console mock room has no such prefix and falls back to HR.
-    mode = mode_from_room_name(ctx.room.name)
-    logger.info("starting interview room=%s mode=%s", ctx.room.name, mode.key.value)
+    # The token server encodes the mode and length cap in the room name
+    # (viva-<mode>-<minutes>-<id>); the console mock room falls back to defaults.
+    room = parse_room_name(ctx.room.name)
+    mode, minutes = room.mode, room.minutes
+    logger.info(
+        "starting interview room=%s mode=%s minutes=%d", ctx.room.name, mode.key.value, minutes
+    )
 
     session = build_session(settings)
 
@@ -36,10 +40,24 @@ async def entrypoint(ctx: JobContext) -> None:
     recorder.attach(session)
     ctx.add_shutdown_callback(lambda: _score_interview(recorder, mode, ctx.room.name))
 
-    await session.start(Interviewer(mode), room=ctx.room)
+    interviewer = Interviewer(mode)
+    await session.start(interviewer, room=ctx.room)
 
     # Let the interviewer speak first — the "incoming call" opening line.
     await session.generate_reply(instructions=mode.opening)
+
+    # Give the interview an ending: wrap up near the cap, then shut down (which
+    # is what kicks off scoring). Runs in the background so hanging up still
+    # works normally; the task is cancelled with the job.
+    asyncio.create_task(
+        run_interview_clock(
+            session,
+            interviewer,
+            mode,
+            minutes,
+            on_finished=lambda: ctx.shutdown("interview complete"),
+        )
+    )
 
 
 async def _score_interview(

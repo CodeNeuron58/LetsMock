@@ -75,7 +75,7 @@ def create_session(req: SessionRequest) -> SessionResponse:
 
     mode = get_mode(req.mode)  # validates + falls back to HR
     identity = req.identity or f"candidate-{uuid.uuid4().hex[:8]}"
-    room = room_name_for(mode.key)
+    room = room_name_for(mode.key, quota.minutes)  # the agent reads the cap back off this
 
     token = (
         api.AccessToken(settings.livekit_api_key, settings.livekit_api_secret)

@@ -112,17 +112,41 @@ def get_mode(key: str | Mode) -> InterviewMode:
         return MODES[Mode.HR]
 
 
-def room_name_for(mode: str | Mode) -> str:
-    """Room name that carries the mode so the agent can pick it up, e.g.
-    'viva-hr-a1b2c3d4'. Unknown modes fall back to HR (via get_mode)."""
+# What the interviewer is told when the interview is nearly out of time. It is
+# swapped in as the agent's instructions, so the close happens on its next turn
+# instead of cutting the candidate off mid-answer.
+WRAP_UP_INSTRUCTIONS = """\
+The interview is almost out of time. Do NOT start any new topic.
+
+Finish the current exchange briefly, then close the interview: thank the \
+candidate by acknowledging one specific thing they talked about, tell them \
+their detailed feedback is on its way, and wish them luck. Keep the whole \
+closing to two or three sentences, and do not ask another question."""
+
+DEFAULT_MINUTES = 5
+
+
+@dataclass(frozen=True)
+class RoomInfo:
+    """What a room name tells the agent about the interview to run."""
+
+    mode: InterviewMode
+    minutes: int
+
+
+def room_name_for(mode: str | Mode, minutes: int = DEFAULT_MINUTES) -> str:
+    """Room name carrying both the mode and the length cap, e.g.
+    'viva-hr-5-a1b2c3d4'. The agent parses it back with `parse_room_name`;
+    encoding it here avoids a second channel just to pass two values."""
     m = get_mode(mode)
-    return f"viva-{m.key.value}-{uuid.uuid4().hex[:8]}"
+    return f"viva-{m.key.value}-{minutes}-{uuid.uuid4().hex[:8]}"
 
 
-def mode_from_room_name(name: str) -> InterviewMode:
-    """Recover the mode from a room name built by `room_name_for`. Anything
-    unexpected (e.g. the console mock room) falls back to HR."""
+def parse_room_name(name: str) -> RoomInfo:
+    """Recover mode and length from a room name built by `room_name_for`.
+    Anything unexpected (e.g. the console mock room) falls back to defaults."""
     parts = name.split("-")
-    if len(parts) >= 2 and parts[0] == "viva":
-        return get_mode(parts[1])
-    return MODES[Mode.HR]
+    if len(parts) >= 3 and parts[0] == "viva":
+        minutes = int(parts[2]) if parts[2].isdigit() else DEFAULT_MINUTES
+        return RoomInfo(mode=get_mode(parts[1]), minutes=minutes)
+    return RoomInfo(mode=MODES[Mode.HR], minutes=DEFAULT_MINUTES)

@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'config.dart';
 import 'scorecard_screen.dart';
 import 'session_api.dart';
+import 'subscriptions.dart';
 
 /// The live interview call. On open it: asks for the mic, gets a token from the
 /// backend, joins the LiveKit room, and publishes the microphone. The agent
@@ -43,9 +44,15 @@ class _CallScreenState extends State<CallScreen> {
         return _fail('Microphone permission is required for the interview.');
       }
 
-      // 2. Token from the backend.
+      // 2. Token from the backend. The server enforces the free tier, so this
+      //    is also where an exhausted quota surfaces.
       _setStatus('Setting up your interview…');
-      final session = await createSession(widget.mode);
+      late final SessionInfo session;
+      try {
+        session = await createSession(widget.mode);
+      } on QuotaExceededException catch (e) {
+        return _offerUpgrade(e.reason);
+      }
       _roomName = session.room;
 
       // 3. Wire up room events, then connect.
@@ -75,6 +82,20 @@ class _CallScreenState extends State<CallScreen> {
       _status = status;
       _connected = connected;
     });
+  }
+
+  /// Free tier is used up: show the paywall, and start the interview straight
+  /// away if they upgrade.
+  Future<void> _offerUpgrade(String reason) async {
+    _setStatus(reason);
+    final purchased = await Subscriptions.showPaywall();
+    if (!mounted) return;
+    if (purchased) {
+      _setStatus('Setting up your interview…');
+      await _start();
+    } else {
+      _fail(reason);
+    }
   }
 
   void _fail(String message) {

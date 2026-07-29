@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'config.dart';
 import 'scorecard.dart';
+import 'subscriptions.dart';
 
 /// The join details the backend returns from `POST /session`.
 class SessionInfo {
@@ -13,29 +14,52 @@ class SessionInfo {
     required this.token,
     required this.room,
     required this.mode,
+    required this.minutes,
   });
 
   final String url;
   final String token;
   final String room;
   final String mode;
+  final int minutes; // length cap for this interview (free vs Pro)
 
   factory SessionInfo.fromJson(Map<String, dynamic> json) => SessionInfo(
         url: json['url'] as String,
         token: json['token'] as String,
         room: json['room'] as String,
         mode: json['mode'] as String,
+        minutes: (json['minutes'] as num?)?.toInt() ?? 5,
       );
+}
+
+/// The server refused because the free tier is used up — show the paywall.
+class QuotaExceededException implements Exception {
+  const QuotaExceededException(this.reason);
+  final String reason;
+  @override
+  String toString() => reason;
 }
 
 /// Ask the backend to mint a LiveKit token for a fresh interview room in the
 /// requested [mode]. Throws if the server is unreachable or returns an error.
 Future<SessionInfo> createSession(InterviewMode mode) async {
+  // The server counts free-tier usage against the RevenueCat user id, so both
+  // it and the current entitlement go with every request.
   final res = await http.post(
     Uri.parse('${AppConfig.backendBaseUrl}/session'),
     headers: const {'Content-Type': 'application/json'},
-    body: jsonEncode({'mode': mode.apiKey}),
+    body: jsonEncode({
+      'mode': mode.apiKey,
+      'user_id': await Subscriptions.userId(),
+      'is_pro': await Subscriptions.isPro(),
+    }),
   );
+
+  if (res.statusCode == 402) {
+    final detail = jsonDecode(res.body)['detail'];
+    final reason = detail is Map ? detail['reason'] as String? : null;
+    throw QuotaExceededException(reason ?? 'Your free interview is used up.');
+  }
   if (res.statusCode != 200) {
     throw Exception('Session request failed (${res.statusCode}): ${res.body}');
   }

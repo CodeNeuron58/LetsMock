@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'call_screen.dart';
 import 'config.dart';
+import 'subscriptions.dart';
 
-void main() => runApp(const VivaApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Subscriptions.init();
+  runApp(const VivaApp());
+}
 
 class VivaApp extends StatelessWidget {
   const VivaApp({super.key});

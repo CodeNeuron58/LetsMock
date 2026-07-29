@@ -20,6 +20,7 @@ from pydantic import BaseModel
 
 from viva.config import get_settings
 from viva.interview.modes import get_mode, room_name_for
+from viva.quota import check_quota
 from viva.scoring.schema import Scorecard
 from viva.storage import InterviewStatus, create_interview, get_interview
 
@@ -29,6 +30,11 @@ app = FastAPI(title="Viva API")
 class SessionRequest(BaseModel):
     mode: str = "hr"
     identity: str | None = None
+    # RevenueCat app user id + entitlement, used for the free-tier quota.
+    # TODO(security): `is_pro` is client-asserted and therefore spoofable.
+    # Verify it server-side against RevenueCat's REST API before launch.
+    user_id: str | None = None
+    is_pro: bool = False
 
 
 class SessionResponse(BaseModel):
@@ -36,6 +42,7 @@ class SessionResponse(BaseModel):
     token: str
     room: str
     mode: str
+    minutes: int  # length cap for this interview (free vs Pro)
 
 
 @app.get("/health")
@@ -53,6 +60,19 @@ def create_session(req: SessionRequest) -> SessionResponse:
             detail="LiveKit credentials not set (LIVEKIT_URL / LIVEKIT_API_KEY / LIVEKIT_API_SECRET).",
         )
 
+    # The free tier is enforced here, not by RevenueCat.
+    quota = check_quota(req.user_id, req.is_pro)
+    if not quota.allowed:
+        raise HTTPException(
+            status_code=402,  # Payment Required — the client shows the paywall
+            detail={
+                "reason": quota.reason,
+                "next_available": quota.next_available.isoformat()
+                if quota.next_available
+                else None,
+            },
+        )
+
     mode = get_mode(req.mode)  # validates + falls back to HR
     identity = req.identity or f"candidate-{uuid.uuid4().hex[:8]}"
     room = room_name_for(mode.key)
@@ -63,8 +83,14 @@ def create_session(req: SessionRequest) -> SessionResponse:
         .with_grants(api.VideoGrants(room_join=True, room=room))
         .to_jwt()
     )
-    create_interview(room, mode.key.value)
-    return SessionResponse(url=settings.livekit_url, token=token, room=room, mode=mode.key.value)
+    create_interview(room, mode.key.value, user_id=req.user_id)
+    return SessionResponse(
+        url=settings.livekit_url,
+        token=token,
+        room=room,
+        mode=mode.key.value,
+        minutes=quota.minutes,
+    )
 
 
 class ScorecardResponse(BaseModel):

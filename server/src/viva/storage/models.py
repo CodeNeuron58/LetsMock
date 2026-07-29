@@ -34,6 +34,8 @@ class Interview(Base):
 
     room: Mapped[str] = mapped_column(String(64), primary_key=True)
     mode: Mapped[str] = mapped_column(String(16))
+    # RevenueCat app user id. Free-tier quota is counted against this.
+    user_id: Mapped[str | None] = mapped_column(String(128), index=True, default=None)
     status: Mapped[InterviewStatus] = mapped_column(
         Enum(InterviewStatus), default=InterviewStatus.pending
     )

@@ -4,16 +4,38 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
+from sqlalchemy import func, select
+
 from viva.scoring.schema import Scorecard
 from viva.storage.models import Interview, InterviewStatus, new_session
 
 
-def create_interview(room: str, mode: str) -> None:
+def create_interview(room: str, mode: str, user_id: str | None = None) -> None:
     """Record a room as soon as its token is issued, so a client polling for a
     scorecard can tell 'not finished yet' apart from 'no such interview'."""
     with new_session() as db:
-        db.add(Interview(room=room, mode=mode, status=InterviewStatus.pending))
+        db.add(
+            Interview(
+                room=room, mode=mode, user_id=user_id, status=InterviewStatus.pending
+            )
+        )
         db.commit()
+
+
+def count_interviews(user_id: str) -> int:
+    with new_session() as db:
+        return db.scalar(
+            select(func.count()).select_from(Interview).where(Interview.user_id == user_id)
+        ) or 0
+
+
+def last_interview_at(user_id: str) -> datetime | None:
+    """When this user last *started* an interview (started, not finished —
+    otherwise an abandoned call would be a free retry)."""
+    with new_session() as db:
+        return db.scalar(
+            select(func.max(Interview.created_at)).where(Interview.user_id == user_id)
+        )
 
 
 def save_scorecard(room: str, scorecard: Scorecard) -> None:

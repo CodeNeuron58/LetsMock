@@ -1,11 +1,19 @@
 /// App-wide configuration.
 ///
-/// [backendBaseUrl] must point at the Viva token server (FastAPI, `api.py`).
-/// For local testing:
-///   - Android emulator: http://10.0.2.2:8000  (10.0.2.2 = the host machine)
-///   - Physical phone:   `http://<your-PC-LAN-IP>:8000`  (same Wi-Fi network)
+/// [backendBaseUrl] must point at the LetsMock token server (FastAPI, `api.py`).
+/// Override it per run rather than editing this file:
+///
+///   emulator (default) : flutter run
+///   USB phone          : adb reverse tcp:8000 tcp:8000
+///                        flutter run --dart-define=BACKEND_URL=http://localhost:8000
+///   deployed           : flutter run --dart-define=BACKEND_URL=https://api.letsmock.app
+///
+/// 10.0.2.2 is the emulator's alias for the host machine.
 class AppConfig {
-  static const String backendBaseUrl = 'http://10.0.2.2:8000';
+  static const String backendBaseUrl = String.fromEnvironment(
+    'BACKEND_URL',
+    defaultValue: 'http://10.0.2.2:8000',
+  );
 
   /// RevenueCat SDK key. These are *public by design* — they ship inside the
   /// app binary, unlike RevenueCat's secret server keys. This is the Test Store

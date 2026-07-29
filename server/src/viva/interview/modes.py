@@ -49,9 +49,21 @@ class InterviewMode:
     guidance: str
     opening: str
 
-    def instructions(self) -> str:
-        """Full system prompt: shared persona + this mode's guidance."""
-        return f"{BASE_PERSONA}\n\n--- This round ---\n{self.guidance}"
+    def instructions(self, resume_text: str | None = None) -> str:
+        """Full system prompt: shared persona + this mode's guidance, plus the
+        candidate's resume when one has been uploaded."""
+        prompt = f"{BASE_PERSONA}\n\n--- This round ---\n{self.guidance}"
+        if resume_text:
+            prompt += (
+                "\n\n--- The candidate's resume ---\n"
+                "This is the candidate's actual resume. Interview them on what is "
+                "written here: name their real projects, employers and technologies, "
+                "and press for specifics behind each claim. Never read the resume "
+                "aloud or say that you are reading it — just ask as an interviewer "
+                "who has clearly studied it would.\n\n"
+                f"{resume_text}"
+            )
+        return prompt
 
 
 MODES: dict[Mode, InterviewMode] = {
@@ -78,12 +90,15 @@ MODES: dict[Mode, InterviewMode] = {
             "This is a resume deep-dive. Grill the candidate on the specific projects "
             "and experience they describe. Drill into technical decisions and trade-offs: "
             "'Why did you choose that?', 'What broke?', 'What would you do differently?'. "
-            "Catch hand-waving. (Parsed resume text will be supplied in a later version; "
-            "for now, ask them to describe their most significant project, then grill it.)"
+            "Catch hand-waving — a claim on a resume is only worth what they can defend. "
+            "If no resume has been provided, ask them to describe their most significant "
+            "project instead, then grill that."
         ),
         opening=(
-            "Greet the candidate briefly, introduce yourself as their interviewer, and "
-            "ask them to walk you through the project they are most proud of."
+            "Greet the candidate briefly and introduce yourself as their interviewer. "
+            "If you have their resume, open with a specific question about one real "
+            "project or role on it; otherwise ask them to walk you through the project "
+            "they are most proud of."
         ),
     ),
     Mode.SDE: InterviewMode(

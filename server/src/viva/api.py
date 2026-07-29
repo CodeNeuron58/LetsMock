@@ -13,16 +13,23 @@ from __future__ import annotations
 
 import uuid
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 from livekit import api
 from pydantic import BaseModel
 
 from viva.config import get_settings
-from viva.interview.modes import get_mode, room_name_for
+from viva.interview.modes import Mode, get_mode, room_name_for
+from viva.interview.resume import ResumeError, extract_resume_text
 from viva.quota import check_quota
 from viva.scoring.schema import Scorecard
-from viva.storage import InterviewStatus, create_interview, get_interview
+from viva.storage import (
+    InterviewStatus,
+    create_interview,
+    get_interview,
+    get_resume,
+    save_resume,
+)
 
 app = FastAPI(title="Viva API")
 
@@ -83,13 +90,60 @@ def create_session(req: SessionRequest) -> SessionResponse:
         .with_grants(api.VideoGrants(room_join=True, room=room))
         .to_jwt()
     )
-    create_interview(room, mode.key.value, user_id=req.user_id)
+    # Resume Grill interviews the candidate on their actual resume. Snapshot it
+    # onto the interview now so a later upload cannot rewrite this one.
+    resume_text = None
+    if mode.key is Mode.RESUME:
+        resume = get_resume(req.user_id)
+        resume_text = resume.text if resume else None
+
+    create_interview(room, mode.key.value, user_id=req.user_id, resume_text=resume_text)
     return SessionResponse(
         url=settings.livekit_url,
         token=token,
         room=room,
         mode=mode.key.value,
         minutes=quota.minutes,
+    )
+
+
+class ResumeResponse(BaseModel):
+    filename: str
+    characters: int
+    preview: str
+
+
+@app.post("/resume", response_model=ResumeResponse)
+async def upload_resume(
+    user_id: str = Form(...),
+    file: UploadFile = File(...),
+) -> ResumeResponse:
+    """Store the candidate's resume so Resume Grill can interview them on it."""
+    if not (file.content_type or "").startswith("application/pdf"):
+        raise HTTPException(status_code=415, detail="Please upload a PDF.")
+
+    try:
+        text = extract_resume_text(await file.read())
+    except ResumeError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
+
+    filename = file.filename or "resume.pdf"
+    save_resume(user_id, filename, text)
+    return ResumeResponse(
+        filename=filename,
+        characters=len(text),
+        preview=text[:280],
+    )
+
+
+@app.get("/resume/{user_id}", response_model=ResumeResponse | None)
+def read_resume(user_id: str) -> ResumeResponse | None:
+    """What resume (if any) is on file — lets the app show 'resume attached'."""
+    resume = get_resume(user_id)
+    if resume is None:
+        return None
+    return ResumeResponse(
+        filename=resume.filename, characters=len(resume.text), preview=resume.text[:280]
     )
 
 

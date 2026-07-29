@@ -14,6 +14,7 @@ class Interviewer(Agent):
     can see which round was run.
     """
 
-    def __init__(self, mode: InterviewMode) -> None:
+    def __init__(self, mode: InterviewMode, resume_text: str | None = None) -> None:
         self.mode = mode
-        super().__init__(instructions=mode.instructions())
+        self.resume_text = resume_text
+        super().__init__(instructions=mode.instructions(resume_text))

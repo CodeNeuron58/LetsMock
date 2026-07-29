@@ -14,7 +14,7 @@ from viva.interview.flow import run_interview_clock
 from viva.interview.modes import InterviewMode, parse_room_name
 from viva.scoring.generate import generate_scorecard
 from viva.scoring.recorder import TranscriptRecorder
-from viva.storage import mark_failed, save_scorecard
+from viva.storage import get_interview_resume, mark_failed, save_scorecard
 
 logger = logging.getLogger("viva.agent")
 
@@ -40,7 +40,13 @@ async def entrypoint(ctx: JobContext) -> None:
     recorder.attach(session)
     ctx.add_shutdown_callback(lambda: _score_interview(recorder, mode, ctx.room.name))
 
-    interviewer = Interviewer(mode)
+    # The API snapshots the candidate's resume onto the interview when the token
+    # is issued, so the agent only needs the room name to find it.
+    resume_text = await asyncio.to_thread(get_interview_resume, ctx.room.name)
+    if resume_text:
+        logger.info("interviewing against a resume (%d chars)", len(resume_text))
+
+    interviewer = Interviewer(mode, resume_text)
     await session.start(interviewer, room=ctx.room)
 
     # Let the interviewer speak first — the "incoming call" opening line.

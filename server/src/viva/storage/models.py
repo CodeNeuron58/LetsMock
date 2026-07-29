@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from functools import lru_cache
 from typing import Any
 
-from sqlalchemy import DateTime, Engine, Enum, String, create_engine
+from sqlalchemy import DateTime, Engine, Enum, String, Text, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
 from sqlalchemy.types import JSON
 
@@ -45,6 +45,22 @@ class Interview(Base):
     scored_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
     # Full Scorecard as JSON — the schema is owned by Pydantic, not the database.
     scorecard: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=None)
+    # Snapshot of the resume this interview was run against, so a later upload
+    # does not rewrite the history of an earlier interview.
+    resume_text: Mapped[str | None] = mapped_column(Text, default=None)
+
+
+class Resume(Base):
+    """The candidate's current resume, reused across interviews."""
+
+    __tablename__ = "resumes"
+
+    user_id: Mapped[str] = mapped_column(String(128), primary_key=True)
+    filename: Mapped[str] = mapped_column(String(255))
+    text: Mapped[str] = mapped_column(Text)
+    uploaded_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
 
 @lru_cache

@@ -17,8 +17,12 @@ from viva.scoring.transcript import Transcript
 # component words aren't double-counted.
 _MULTIWORD_FILLERS = ("you know", "i mean", "sort of", "kind of")
 _SINGLEWORD_FILLERS = frozenset(
-    {"um", "uh", "erm", "uhm", "hmm", "like", "basically", "actually", "literally"}
+    {"um", "uh", "erm", "uhm", "hmm", "basically", "actually", "literally"}
 )
+# "like" is only filler when it is set off by a pause — "I used, like, Whisper".
+# In "tools like LangGraph" it is a real comparison, and counting those makes
+# the filler total look wrong to the person reading their own scorecard.
+_FILLER_LIKE = re.compile(r"(?:,\s*like\b|\blike\s*,)")
 _WORD = re.compile(r"[a-z']+")
 
 
@@ -34,12 +38,17 @@ def compute_metrics(transcript: Transcript) -> SpeechMetrics:
         if hits:
             breakdown[phrase] = hits
             working = re.sub(pattern, " ", working)
+    if hits := len(_FILLER_LIKE.findall(working)):
+        breakdown["like"] = hits
+        working = _FILLER_LIKE.sub(" ", working)
     for word in _WORD.findall(working):
         if word in _SINGLEWORD_FILLERS:
             breakdown[word] = breakdown.get(word, 0) + 1
 
     total_words = len(_WORD.findall(text))
-    speaking = sum(d for t in turns if (d := t.duration) is not None)
+    # Pace is measured against time actually spent talking, not the wall-clock
+    # span, so thinking pauses don't read as slow speech.
+    speaking = sum(s for t in turns if (s := t.speaking_time) is not None)
     wpm = round(total_words / (speaking / 60), 1) if speaking > 0 else 0.0
 
     return SpeechMetrics(

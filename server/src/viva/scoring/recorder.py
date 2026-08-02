@@ -28,8 +28,11 @@ class TranscriptRecorder:
 
     def __init__(self) -> None:
         self._turns: list[Turn] = []
-        self._speech_start: float | None = None
-        self._last_speech: tuple[float, float] | None = None  # (start, end)
+        self._speech_start: float | None = None  # current burst, if speaking
+        # Accumulated across every burst since the last committed turn.
+        self._pending_start: float | None = None
+        self._pending_end: float | None = None
+        self._pending_seconds: float = 0.0
 
     def attach(self, session: AgentSession) -> None:
         session.on("user_state_changed", self._on_user_state)
@@ -44,8 +47,13 @@ class TranscriptRecorder:
     def _on_user_state(self, ev: UserStateChangedEvent) -> None:
         if ev.new_state == "speaking":
             self._speech_start = ev.created_at
+            if self._pending_start is None:
+                self._pending_start = ev.created_at
         elif ev.old_state == "speaking" and self._speech_start is not None:
-            self._last_speech = (self._speech_start, ev.created_at)
+            # One answer usually arrives as several bursts with thinking pauses
+            # between them; add this burst rather than replacing the last one.
+            self._pending_seconds += max(0.0, ev.created_at - self._speech_start)
+            self._pending_end = ev.created_at
             self._speech_start = None
 
     def _on_item(self, ev: ConversationItemAddedEvent) -> None:
@@ -57,12 +65,17 @@ class TranscriptRecorder:
             return
 
         if item.role == "user":
-            # Consume the matching speaking window so it can't be reused by a
-            # later turn (e.g. when one utterance arrives as two items).
-            start = end = None
-            if self._last_speech is not None:
-                start, end = self._last_speech
-                self._last_speech = None
-            self._turns.append(Turn(role="candidate", text=text, start=start, end=end))
+            # Consume the accumulated window so it can't be reused by a later
+            # turn (e.g. when one utterance arrives as two items).
+            turn = Turn(
+                role="candidate",
+                text=text,
+                start=self._pending_start,
+                end=self._pending_end,
+                speech_seconds=self._pending_seconds or None,
+            )
+            self._pending_start = self._pending_end = None
+            self._pending_seconds = 0.0
+            self._turns.append(turn)
         elif item.role == "assistant":
             self._turns.append(Turn(role="interviewer", text=text))

@@ -48,6 +48,39 @@ def test_filler_words_are_counted_and_broken_down():
     assert metrics.filler_breakdown["you know"] == 1
 
 
+def test_like_is_only_a_filler_when_it_is_set_off_by_a_pause():
+    """"tools like LangGraph" is a comparison; ", like," is a verbal tic. An
+    inflated filler count is worse than a missed one — the candidate can count
+    their own 'like's and will stop trusting the scorecard."""
+    transcript = Transcript(
+        turns=[
+            Turn(
+                role="candidate",
+                start=0,
+                end=10,
+                text="I used tools like LangGraph and, like, Whisper for this.",
+            )
+        ]
+    )
+
+    assert compute_metrics(transcript).filler_breakdown.get("like") == 1
+
+
+def test_pace_sums_every_burst_of_an_answer():
+    """Real answers arrive in bursts with pauses between them. Counting only
+    the last burst inflates words-per-minute to impossible values."""
+    transcript = Transcript(
+        turns=[
+            Turn(role="candidate", start=0, end=60, speech_seconds=40.0, text=" ".join(["word"] * 80))
+        ]
+    )
+
+    metrics = compute_metrics(transcript)
+
+    assert metrics.speaking_seconds == 40.0  # not the 60s span
+    assert metrics.words_per_minute == 120.0  # a humanly possible pace
+
+
 def test_multiword_fillers_are_not_double_counted():
     """'you know' must not also register as a bare 'know'-style single hit."""
     transcript = Transcript(
@@ -116,6 +149,23 @@ def test_recorder_ignores_empty_items():
     recorder._on_item(_msg("assistant", "   "))
 
     assert recorder.transcript.turns == []
+
+
+def test_recorder_accumulates_speech_across_bursts_of_one_answer():
+    """The bug this guards: a candidate trails off and continues several times
+    before the turn commits. Keeping only the final burst made pace read ~280
+    words per minute — impossible, and instantly untrustworthy."""
+    recorder = TranscriptRecorder()
+
+    recorder._on_item(_msg("assistant", "Tell me about a project."))
+    for start, end in [(10.0, 20.0), (24.0, 34.0), (40.0, 42.0)]:  # 22s of speech
+        recorder._on_user_state(_state("listening", "speaking", start))
+        recorder._on_user_state(_state("speaking", "listening", end))
+    recorder._on_item(_msg("user", "A long answer said in three goes."))
+
+    turn = recorder.transcript.candidate_turns()[0]
+    assert turn.speaking_time == 22.0  # not just the final 2s burst
+    assert turn.duration == 32.0  # the span, pauses included, is still recorded
 
 
 def test_a_speaking_window_is_not_reused_by_a_later_turn():

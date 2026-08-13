@@ -1,0 +1,11 @@
+{
+  // Static-assets-only Worker: Astro builds to dist/ and Cloudflare serves those
+  // files straight from the edge. There is no server-side code here.
+  "name": "letsmock",
+  "compatibility_date": "2026-08-13",
+  "assets": {
+    "directory": "./dist",
+    // Astro emits /privacy/index.html; serve it for /privacy as well.
+    "not_found_handling": "404-page"
+  }
+}

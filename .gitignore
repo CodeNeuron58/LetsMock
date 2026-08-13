@@ -38,3 +38,8 @@ app/**/GeneratedPluginRegistrant.*
 *.iml
 .DS_Store
 Thumbs.db
+
+# ---- Web (web/) ----
+web/node_modules/
+web/dist/
+web/.astro/

@@ -1,0 +1,114 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+
+const nav = [
+  { href: "/#how", label: "How it works" },
+  { href: "/#rounds", label: "Rounds" },
+  { href: "/#pricing", label: "Pricing" },
+];
+---
+
+<!doctype html>
+<html lang="en" class="scheme-dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#0a0a0b" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>"
+    />
+  </head>
+
+  <body class="bg-ink-950 text-ink-200 font-sans antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-ember-500 focus:px-4 focus:py-2 focus:text-ink-950"
+      >Skip to content</a
+    >
+
+    <header
+      class="sticky top-0 z-40 border-b border-ink-800/80 bg-ink-950/80 backdrop-blur-md"
+    >
+      <div
+        class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4"
+      >
+        <a href="/" class="flex items-center gap-2.5 group">
+          <span
+            class="grid size-8 place-items-center rounded-lg bg-ember-500 text-ink-950 font-bold text-sm"
+            >LM</span
+          >
+          <span class="font-semibold text-ink-50 tracking-tight"
+            >LetsMock</span
+          >
+        </a>
+
+        <nav class="hidden items-center gap-7 text-sm sm:flex">
+          {
+            nav.map((item) => (
+              <a
+                href={item.href}
+                class="text-ink-400 transition-colors hover:text-ink-50"
+              >
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="border-t border-ink-800 bg-ink-900">
+      <div
+        class="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div>
+          <p class="font-semibold text-ink-50">LetsMock</p>
+          <p class="mt-1 text-sm text-ink-400">
+            Get grilled before the real thing.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-400">
+          <a href="/privacy" class="transition-colors hover:text-ink-50"
+            >Privacy</a
+          >
+          <a href="/terms" class="transition-colors hover:text-ink-50">Terms</a>
+          <a
+            href="mailto:support@letsmock.com"
+            class="transition-colors hover:text-ink-50">Support</a
+          >
+        </div>
+      </div>
+
+      <div class="border-t border-ink-800/70">
+        <p class="mx-auto max-w-6xl px-5 py-5 text-xs text-ink-400">
+          © {new Date().getFullYear()} LetsMock. Built by an engineering student
+          who got tired of walking into interviews cold.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

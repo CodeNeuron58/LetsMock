@@ -1,0 +1,226 @@
+---
+import Base from "../layouts/Base.astro";
+import Scorecard from "../components/Scorecard.astro";
+
+const steps = [
+  {
+    n: "01",
+    title: "Pick a round",
+    body: "HR, a grilling on your actual resume, or CS fundamentals. Five minutes, free, no signup.",
+  },
+  {
+    n: "02",
+    title: "Talk. Out loud.",
+    body: "It asks, you answer, it follows up. Ramble and it cuts in. Pause to think and it waits — like a real interviewer would.",
+  },
+  {
+    n: "03",
+    title: "Read the damage",
+    body: "A scorecard that quotes you back, shows what a strong answer sounds like, and counts every filler word.",
+  },
+];
+
+const rounds = [
+  {
+    title: "HR & Behavioural",
+    body: "Motivation, conflict, teamwork, the weakness question. Scored for structure, not vibes.",
+    tag: "Everyone",
+  },
+  {
+    title: "Resume Grill",
+    body: "Upload your resume. It reads your actual projects and asks why you chose that, what broke, what you'd redo.",
+    tag: "Most feared",
+  },
+  {
+    title: "CS Fundamentals",
+    body: "Indexing, concurrency, complexity, API design — spoken aloud, because that's how you'll be asked.",
+    tag: "SDE roles",
+  },
+];
+---
+
+<Base
+  title="LetsMock — AI mock interviews you actually speak"
+  description="An AI interviewer that asks about your real resume, interrupts you when you ramble, and hands you a scorecard that doesn't flatter you. Free to start."
+>
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div
+      class="pointer-events-none absolute -top-40 left-1/2 h-96 w-[42rem] -translate-x-1/2 rounded-full bg-ember-500/12 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="relative mx-auto max-w-6xl px-5 pt-16 pb-20 sm:pt-24">
+      <div class="grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
+        <div>
+          <p
+            class="inline-flex items-center gap-2 rounded-full border border-ink-700 bg-ink-900 px-3 py-1 text-xs text-ink-400"
+          >
+            <span class="size-1.5 rounded-full bg-ember-500"></span>
+            Mock interviews, spoken aloud
+          </p>
+
+          <h1
+            class="mt-5 text-4xl font-bold leading-[1.08] text-ink-50 sm:text-5xl lg:text-6xl"
+          >
+            Your first interview
+            <span class="text-ember-500">shouldn't be</span> the one that counts.
+          </h1>
+
+          <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-400">
+            Reading answers doesn't teach you to speak under pressure. LetsMock
+            calls you, digs into your real projects, interrupts you when you
+            ramble — then tells you exactly where you lost the room.
+          </p>
+
+          <div class="mt-9 flex flex-wrap items-center gap-3">
+            <span
+              class="inline-flex items-center gap-2 rounded-xl bg-ember-500 px-5 py-3 font-semibold text-ink-950"
+            >
+              Coming to Android
+            </span>
+            <a
+              href="#how"
+              class="inline-flex items-center gap-2 rounded-xl border border-ink-700 px-5 py-3 font-medium text-ink-200 transition-colors hover:border-ink-400 hover:text-ink-50"
+            >
+              See how it works
+            </a>
+          </div>
+
+          <p class="mt-5 text-sm text-ink-400">
+            First interview free · No account · Built for placement season
+          </p>
+        </div>
+
+        <div class="lg:pl-4">
+          <Scorecard />
+          <p class="mt-3 text-center text-xs text-ink-400">
+            An actual scorecard. It is not kind.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The insight -->
+  <section class="border-y border-ink-800 bg-ink-900">
+    <div class="mx-auto max-w-3xl px-5 py-16 text-center sm:py-20">
+      <h2 class="text-2xl font-bold text-ink-50 sm:text-3xl">
+        You don't fail interviews because you didn't know the answer.
+      </h2>
+      <p class="mt-5 text-lg leading-relaxed text-ink-400">
+        You fail because you'd never said it out loud before. Because you filled
+        the silence with "like". Because you listed the tools instead of
+        defending the decision. None of that shows up while you're reading.
+      </p>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how" class="scroll-mt-20">
+    <div class="mx-auto max-w-6xl px-5 py-20">
+      <h2 class="text-3xl font-bold text-ink-50">Three steps, five minutes</h2>
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {
+          steps.map((s) => (
+            <div class="relative rounded-2xl border border-ink-800 bg-ink-900 p-6">
+              <span class="text-sm font-bold tracking-widest text-ember-500">
+                {s.n}
+              </span>
+              <h3 class="mt-3 text-lg font-semibold text-ink-50">{s.title}</h3>
+              <p class="mt-2 leading-relaxed text-ink-400">{s.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Rounds -->
+  <section id="rounds" class="scroll-mt-20 border-t border-ink-800 bg-ink-900">
+    <div class="mx-auto max-w-6xl px-5 py-20">
+      <h2 class="text-3xl font-bold text-ink-50">Pick your poison</h2>
+      <p class="mt-3 max-w-2xl text-ink-400">
+        Three rounds, one interviewer that has read what you gave it.
+      </p>
+
+      <div class="mt-12 grid gap-6 md:grid-cols-3">
+        {
+          rounds.map((r) => (
+            <div class="rounded-2xl border border-ink-800 bg-ink-850 p-6 transition-colors hover:border-ink-700">
+              <span class="rounded-full border border-ink-700 px-2.5 py-1 text-[11px] uppercase tracking-wider text-ink-400">
+                {r.tag}
+              </span>
+              <h3 class="mt-4 text-lg font-semibold text-ink-50">{r.title}</h3>
+              <p class="mt-2 leading-relaxed text-ink-400">{r.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="scroll-mt-20">
+    <div class="mx-auto max-w-4xl px-5 py-20">
+      <h2 class="text-3xl font-bold text-ink-50">Priced for students</h2>
+      <p class="mt-3 text-ink-400">
+        A human mock interview costs ₹500–2,000. This is unlimited.
+      </p>
+
+      <div class="mt-12 grid gap-6 sm:grid-cols-2">
+        <div class="rounded-2xl border border-ink-800 bg-ink-900 p-7">
+          <p class="text-sm uppercase tracking-widest text-ink-400">Free</p>
+          <p class="mt-3 text-3xl font-bold text-ink-50">₹0</p>
+          <ul class="mt-6 space-y-3 text-sm text-ink-400">
+            <li>Your first interview, free</li>
+            <li>One a week after that</li>
+            <li>Five minutes, full scorecard</li>
+          </ul>
+        </div>
+
+        <div
+          class="relative rounded-2xl border border-ember-500/40 bg-ink-850 p-7"
+        >
+          <span
+            class="absolute -top-3 left-7 rounded-full bg-ember-500 px-3 py-1 text-xs font-bold text-ink-950"
+            >Pro</span
+          >
+          <p class="text-sm uppercase tracking-widest text-ink-400">
+            Placement season
+          </p>
+          <p class="mt-3 flex items-baseline gap-2">
+            <span class="text-3xl font-bold text-ink-50">₹499</span>
+            <span class="text-ink-400">/month</span>
+          </p>
+          <p class="mt-1 text-sm text-ink-400">or ₹1,999/year</p>
+          <ul class="mt-6 space-y-3 text-sm text-ink-200">
+            <li>Unlimited interviews</li>
+            <li>15-minute rounds</li>
+            <li>Resume Grill on your real CV</li>
+            <li>Progress across every mock</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Close -->
+  <section class="border-t border-ink-800 bg-ink-900">
+    <div class="mx-auto max-w-3xl px-5 py-20 text-center">
+      <h2 class="text-3xl font-bold text-ink-50">
+        Be bad at this in private first.
+      </h2>
+      <p class="mt-4 text-lg text-ink-400">
+        Placement season is short. Your first bad answer shouldn't cost you an
+        offer.
+      </p>
+      <p
+        class="mt-8 inline-flex items-center gap-2 rounded-xl bg-ember-500 px-6 py-3.5 font-semibold text-ink-950"
+      >
+        Coming to Android
+      </p>
+    </div>
+  </section>
+</Base>

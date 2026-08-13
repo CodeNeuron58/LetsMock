@@ -1,0 +1,122 @@
+---
+// The product's payoff, rendered in markup rather than a screenshot: the app is
+// mid-redesign, and this doubles as the target the app's scorecard should match.
+const answers = [
+  {
+    q: "Tell me about a time you disagreed with a teammate.",
+    score: 3.0,
+    you: "I'd ask them to review my options and try to make them agree with me.",
+    strong:
+      "I'd start by understanding why they saw it differently — then decide together, not win.",
+    flags: ["No empathy", "Persuasion, not resolution"],
+  },
+  {
+    q: "Walk me through the hardest bug you've shipped a fix for.",
+    score: 7.5,
+    you: "Latency was the problem, so I switched to streaming speech-to-text.",
+    strong:
+      "Same answer, but name the number: it went from 2.6s to 0.3s, and say how you proved it.",
+    flags: ["Missing metrics"],
+  },
+];
+
+// Full class strings, not interpolated fragments — Tailwind scans source text,
+// so `text-${tone}` would never be generated.
+const tone = (s: number) =>
+  s >= 7
+    ? "bg-score-good/15 text-score-good"
+    : s >= 5
+      ? "bg-score-mid/15 text-score-mid"
+      : "bg-score-bad/15 text-score-bad";
+---
+
+<div
+  class="rounded-2xl border border-ink-700 bg-ink-850 p-5 shadow-2xl shadow-black/60 sm:p-6"
+>
+  <!-- Overall -->
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <p class="text-xs uppercase tracking-widest text-ink-400">
+        HR round · 5 min
+      </p>
+      <p class="mt-2 flex items-baseline gap-1.5">
+        <span class="text-5xl font-bold tracking-tight text-score-mid">6.4</span
+        >
+        <span class="text-lg text-ink-400">/10</span>
+      </p>
+    </div>
+
+    <dl class="grid grid-cols-3 gap-3 text-center">
+      {
+        [
+          ["132", "wpm"],
+          ["9", "fillers"],
+          ["4", "min"],
+        ].map(([value, label]) => (
+          <div class="rounded-lg border border-ink-700 bg-ink-900 px-3 py-2">
+            <dd class="text-lg font-semibold text-ink-50">{value}</dd>
+            <dt class="text-[11px] text-ink-400">{label}</dt>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+
+  <p class="mt-4 text-sm leading-relaxed text-ink-200">
+    You know your projects, but you describe them instead of defending them.
+    Twice you reached for a tool name when the question asked for a decision.
+  </p>
+
+  <div class="mt-4 flex flex-wrap gap-1.5">
+    {
+      ['"like" ×5', '"you know" ×2', '"kind of" ×2'].map((f) => (
+        <span class="rounded-full border border-ink-700 bg-ink-900 px-2.5 py-1 text-[11px] text-ink-400">
+          {f}
+        </span>
+      ))
+    }
+  </div>
+
+  <!-- Per answer -->
+  <div class="mt-5 space-y-3 border-t border-ink-700 pt-5">
+    {
+      answers.map((a) => (
+        <div class="rounded-xl border border-ink-700 bg-ink-900 p-4">
+          <div class="flex items-start justify-between gap-3">
+            <p class="text-sm font-medium leading-snug text-ink-50">{a.q}</p>
+            <span
+              class={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold ${tone(a.score)}`}
+            >
+              {a.score.toFixed(1)}
+            </span>
+          </div>
+
+          <div class="mt-3 space-y-2.5 text-sm">
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-ink-400">
+                You said
+              </p>
+              <p class="mt-0.5 leading-relaxed text-ink-400">{a.you}</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-score-good">
+                A strong answer
+              </p>
+              <p class="mt-0.5 leading-relaxed text-ink-200">{a.strong}</p>
+            </div>
+          </div>
+
+          {a.flags.length > 0 && (
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              {a.flags.map((f) => (
+                <span class="rounded-md bg-score-bad/10 px-2 py-0.5 text-[11px] text-score-bad">
+                  {f}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      ))
+    }
+  </div>
+</div>

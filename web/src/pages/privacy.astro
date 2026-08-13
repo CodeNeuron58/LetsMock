@@ -1,0 +1,175 @@
+---
+import Base from "../layouts/Base.astro";
+
+// Keep this in step with the Play Console Data Safety form — reviewers compare
+// the two, and a mismatch is a rejection.
+const updated = "13 August 2026";
+---
+
+<Base
+  title="Privacy Policy — LetsMock"
+  description="What LetsMock records during a mock interview, who processes it, how long it is kept, and how to delete it."
+>
+  <article class="mx-auto max-w-3xl px-5 py-16">
+    <h1 class="text-4xl font-bold text-ink-50">Privacy Policy</h1>
+    <p class="mt-3 text-sm text-ink-400">Last updated: {updated}</p>
+
+    <div
+      class="mt-10 space-y-10 leading-relaxed [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-ink-50 [&_p]:mt-3 [&_p]:text-ink-400 [&_li]:mt-2 [&_li]:text-ink-400 [&_ul]:mt-3 [&_ul]:list-disc [&_ul]:pl-5 [&_a]:text-ember-400 [&_a]:underline"
+    >
+      <section
+        class="rounded-2xl border border-ink-800 bg-ink-900 p-6 [&_p]:text-ink-200"
+      >
+        <h2>The short version</h2>
+        <p>
+          LetsMock does not ask you to create an account. We do not collect your
+          name, email address or phone number. To run an interview we process
+          your <strong class="text-ink-50">voice</strong>, and — if you choose to
+          upload one — the text of your <strong class="text-ink-50">resume</strong
+          >. You can delete everything at any time by emailing us.
+        </p>
+      </section>
+
+      <section>
+        <h2>1. What we collect</h2>
+        <ul>
+          <li>
+            <strong class="text-ink-50">Your voice during an interview.</strong>
+            Audio is streamed while a mock interview is in progress so the app can
+            transcribe what you say and reply to it.
+          </li>
+          <li>
+            <strong class="text-ink-50">The transcript of the interview.</strong>
+            Text of both sides of the conversation, with timings, so we can score
+            your answers and show you the transcript afterwards.
+          </li>
+          <li>
+            <strong class="text-ink-50">Your resume, if you upload one.</strong>
+            We extract the plain text from the PDF so the interviewer can ask about
+            your actual projects. We do not keep the original file.
+          </li>
+          <li>
+            <strong class="text-ink-50">Your scorecard.</strong> The scores, feedback
+            and speech metrics generated after each interview.
+          </li>
+          <li>
+            <strong class="text-ink-50">An anonymous app identifier.</strong> A random
+            id generated on your device to keep track of your interviews and whether
+            you have an active subscription. It is not linked to your identity.
+          </li>
+        </ul>
+        <p>
+          We do <strong class="text-ink-50">not</strong> collect your name, email
+          address, phone number, contacts, photos, location or advertising identifiers.
+        </p>
+      </section>
+
+      <section>
+        <h2>2. Why we process it</h2>
+        <p>
+          Solely to provide the app: to conduct the interview, generate your
+          scorecard, show you your history, and apply your free-tier or
+          subscription entitlement. We do not sell your data, and we do not use
+          your interviews for advertising.
+        </p>
+      </section>
+
+      <section>
+        <h2>3. Who processes it for us</h2>
+        <p>
+          A mock interview is not possible without sending audio and text to
+          specialist services. Each one processes data only to deliver its part
+          of the service:
+        </p>
+        <ul>
+          <li>
+            <strong class="text-ink-50">LiveKit</strong> — carries the live audio
+            between your device and our interviewer, and stores session recordings
+            and transcripts that we use to diagnose faults.
+          </li>
+          <li>
+            <strong class="text-ink-50">Deepgram</strong> — converts your speech to
+            text, and generates the interviewer's voice.
+          </li>
+          <li>
+            <strong class="text-ink-50">Groq</strong> — runs the language model that
+            decides what to ask next and writes your scorecard.
+          </li>
+          <li>
+            <strong class="text-ink-50">RevenueCat</strong> — manages subscriptions
+            and receipts. It receives the anonymous app identifier, never your interview
+            content.
+          </li>
+          <li>
+            <strong class="text-ink-50">Google Play</strong> — processes payments.
+            We never see or store your card details.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>4. How long we keep it</h2>
+        <ul>
+          <li>
+            <strong class="text-ink-50">Transcripts and scorecards</strong> — kept
+            so you can revisit past interviews and track progress, until you ask us
+            to delete them.
+          </li>
+          <li>
+            <strong class="text-ink-50">Resume text</strong> — kept until you replace
+            it or ask us to delete it.
+          </li>
+          <li>
+            <strong class="text-ink-50">Session recordings held by LiveKit</strong>
+            — retained only for troubleshooting and deleted on their standard schedule.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>5. Deleting your data</h2>
+        <p>
+          Email <a href="mailto:support@letsmock.com">support@letsmock.com</a>
+          from the device you use, and we will delete your interviews, transcripts,
+          scorecards and resume text. Uninstalling the app on its own does not delete
+          data already stored, because there is no account for us to close.
+        </p>
+      </section>
+
+      <section>
+        <h2>6. Children</h2>
+        <p>
+          LetsMock is intended for people preparing for employment and is not
+          directed at children under 13. We do not knowingly collect data from
+          children.
+        </p>
+      </section>
+
+      <section>
+        <h2>7. Security</h2>
+        <p>
+          Audio and API traffic are encrypted in transit. Access to stored
+          interview data is limited to the operator of the service. No system is
+          perfectly secure, and we cannot guarantee absolute security.
+        </p>
+      </section>
+
+      <section>
+        <h2>8. Changes</h2>
+        <p>
+          If this policy changes materially we will update the date at the top of
+          this page and, where the change is significant, note it in the app.
+        </p>
+      </section>
+
+      <section>
+        <h2>9. Contact</h2>
+        <p>
+          LetsMock is operated by an individual developer, Biprayan Choudhuri, in
+          India. Questions or data requests:
+          <a href="mailto:support@letsmock.com">support@letsmock.com</a>.
+        </p>
+      </section>
+    </div>
+  </article>
+</Base>

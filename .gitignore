@@ -43,3 +43,8 @@ Thumbs.db
 web/node_modules/
 web/dist/
 web/.astro/
+
+# ---- Design exports (source of truth for the UI, not part of the build) ----
+*.dc.html
+support.js
+.thumbnail

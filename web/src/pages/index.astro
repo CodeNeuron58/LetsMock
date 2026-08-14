@@ -1,225 +1,480 @@
 ---
 import Base from "../layouts/Base.astro";
-import Scorecard from "../components/Scorecard.astro";
-
-const steps = [
-  {
-    n: "01",
-    title: "Pick a round",
-    body: "HR, a grilling on your actual resume, or CS fundamentals. Five minutes, free, no signup.",
-  },
-  {
-    n: "02",
-    title: "Talk. Out loud.",
-    body: "It asks, you answer, it follows up. Ramble and it cuts in. Pause to think and it waits — like a real interviewer would.",
-  },
-  {
-    n: "03",
-    title: "Read the damage",
-    body: "A scorecard that quotes you back, shows what a strong answer sounds like, and counts every filler word.",
-  },
-];
+import Waitlist from "../components/Waitlist.astro";
 
 const rounds = [
   {
-    title: "HR & Behavioural",
-    body: "Motivation, conflict, teamwork, the weakness question. Scored for structure, not vibes.",
-    tag: "Everyone",
+    n: "01",
+    tag: "No setup",
+    title: "HR / Behavioural",
+    body: "Motivation, conflict, teamwork. Scored for structure, not vibes.",
+    dark: false,
   },
   {
+    n: "02",
+    tag: "Reads your PDF",
     title: "Resume Grill",
-    body: "Upload your resume. It reads your actual projects and asks why you chose that, what broke, what you'd redo.",
-    tag: "Most feared",
+    body: "Reads your uploaded PDF and asks about your real projects — why that choice, what broke, what you'd redo.",
+    dark: true,
   },
   {
+    n: "03",
+    tag: "Spoken aloud",
     title: "CS Fundamentals",
-    body: "Indexing, concurrency, complexity, API design — spoken aloud, because that's how you'll be asked.",
-    tag: "SDE roles",
+    body: "Indexing, concurrency, complexity, API design — spoken aloud, no code editor.",
+    dark: false,
   },
+];
+
+// Heights for the waveform bars in the phone mockup.
+const wave = [14, 30, 52, 38, 64, 22, 46, 70, 33, 58, 18, 44, 66, 26, 50, 36, 62, 20, 41, 56, 28, 15];
+const waveTone = ["bg-[#4A3A8C]", "bg-[#5B45B8]", "bg-violet-500"];
+
+const transcript = [
+  { who: "Interviewer", text: "Walk me through the caching layer on the delivery app you listed." },
+  { who: "You", text: "So, um, basically we had a lot of read traffic and, like, the database was kind of struggling, so we…", muted: true },
+  { who: "Interrupts you", text: "Hold on. What was the read-to-write ratio?", cut: true },
+  { who: "You", text: "Roughly 40 to 1. We put Redis in front and cached the menu payload for 90 seconds." },
+  { who: "Interviewer", text: "Why 90 seconds and not 10?" },
 ];
 ---
 
 <Base
-  title="LetsMock — AI mock interviews you actually speak"
-  description="An AI interviewer that asks about your real resume, interrupts you when you ramble, and hands you a scorecard that doesn't flatter you. Free to start."
+  dark
+  title="LetsMock — voice mock interviews that interrupt"
+  description="A real-time voice interview that asks about your resume, follows up on vague answers, and scores how you said it. Closed beta on Android."
 >
   <!-- Hero -->
-  <section class="relative overflow-hidden">
-    <div
-      class="pointer-events-none absolute -top-40 left-1/2 h-96 w-[42rem] -translate-x-1/2 rounded-full bg-ember-500/12 blur-3xl"
-      aria-hidden="true"
+  <div
+    class="-mt-[68px] bg-ink-950 pt-[68px] text-mist-50"
+    style="background-image:radial-gradient(1100px 560px at 50% -10%,rgba(108,75,255,0.42),rgba(11,10,18,0) 68%)"
+  >
+    <section class="mx-auto max-w-[1000px] px-6 pt-16 text-center">
+      <div
+        class="label mb-7 inline-flex items-center gap-[9px] rounded-full border border-white/12 bg-white/6 py-[7px] pr-[15px] pl-[11px] text-[11px] tracking-[0.1em] text-violet-200"
+      >
+        <span
+          class="size-[7px] rounded-full bg-violet-500 shadow-[0_0_0_4px_rgba(108,75,255,0.28)]"
+        ></span>
+        Voice mock interviews · Android, closed beta
+      </div>
+
+      <h1
+        class="mx-auto mb-5 text-[clamp(44px,5.2vw,70px)] leading-none font-extrabold tracking-[-0.045em]"
+      >
+        Interviews that interrupt.
+      </h1>
+
+      <p class="mx-auto mb-[30px] max-w-[32em] text-lg leading-[1.55] text-mist-400">
+        Reading answers doesn't teach you to speak under pressure. A real-time voice interview
+        asks about your resume, follows up on vague answers, and scores how you said it.
+      </p>
+
+      <div class="mb-[18px] flex flex-wrap justify-center gap-3">
+        <a
+          href="#waitlist"
+          class="rounded-full bg-violet-500 px-7 py-4 text-base font-semibold text-white shadow-[0_16px_40px_-16px_rgba(108,75,255,0.9)] transition-colors hover:bg-white hover:text-ink-880"
+          >Get early access</a
+        >
+        <a
+          href="/scorecard"
+          class="rounded-full border border-white/20 px-7 py-4 text-base font-semibold text-mist-50 transition-colors hover:border-white hover:bg-white/6"
+          >See a real scorecard</a
+        >
+      </div>
+
+      <p class="label text-[11px] leading-[1.9] tracking-[0.09em] text-mist-600">
+        3 rounds · Resume-aware · 8–12 minutes · Free in beta
+      </p>
+    </section>
+
+    <!-- Hero cards -->
+    <section
+      class="mx-auto flex max-w-[1180px] flex-wrap items-center justify-center gap-[26px] px-6 pt-13 pb-20"
     >
-    </div>
+      <div
+        class="w-[270px] rounded-[22px] bg-white p-[22px] text-ink-880 shadow-[0_30px_70px_-24px_rgba(5,3,20,0.75)] lg:-translate-y-[26px]"
+      >
+        <div class="label mb-[18px] text-[9.5px] text-violet-500">Computed in code</div>
+        <div class="flex flex-col gap-4">
+          {
+            [
+              ["17", "Filler words"],
+              ["168", "Words / min"],
+              ["9:12", "Talk time"],
+            ].map(([value, label], i) => (
+              <>
+                {i > 0 && <div class="h-px bg-paper-300" />}
+                <div class="flex items-baseline justify-between gap-2.5">
+                  <span class="font-mono text-[30px] tracking-[-0.03em]">{value}</span>
+                  <span class="label text-[9.5px] tracking-[0.1em] text-slate-500">
+                    {label}
+                  </span>
+                </div>
+              </>
+            ))
+          }
+        </div>
+        <p class="mt-[18px] text-[13px] leading-[1.5] text-mist-700">
+          Never asked of the model, so the numbers can't be hallucinated.
+        </p>
+      </div>
 
-    <div class="relative mx-auto max-w-6xl px-5 pt-16 pb-20 sm:pt-24">
-      <div class="grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
-        <div>
-          <p
-            class="inline-flex items-center gap-2 rounded-full border border-ink-700 bg-ink-900 px-3 py-1 text-xs text-ink-400"
-          >
-            <span class="size-1.5 rounded-full bg-ember-500"></span>
-            Mock interviews, spoken aloud
-          </p>
-
-          <h1
-            class="mt-5 text-4xl font-bold leading-[1.08] text-ink-50 sm:text-5xl lg:text-6xl"
-          >
-            Your first interview
-            <span class="text-ember-500">shouldn't be</span> the one that counts.
-          </h1>
-
-          <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-400">
-            Reading answers doesn't teach you to speak under pressure. LetsMock
-            calls you, digs into your real projects, interrupts you when you
-            ramble — then tells you exactly where you lost the room.
-          </p>
-
-          <div class="mt-9 flex flex-wrap items-center gap-3">
-            <span
-              class="inline-flex items-center gap-2 rounded-xl bg-ember-500 px-5 py-3 font-semibold text-ink-950"
-            >
-              Coming to Android
+      <!-- Phone -->
+      <div
+        class="w-[308px] shrink-0 rounded-[44px] border border-ink-600 bg-ink-800 p-[11px] shadow-[0_50px_90px_-30px_rgba(5,3,20,0.9)]"
+      >
+        <div
+          class="flex min-h-[512px] flex-col gap-[18px] rounded-[34px] border border-ink-700 bg-[#0D0B15] px-[18px] pt-5 pb-[18px]"
+        >
+          <div class="label flex items-center justify-between text-[10.5px] tracking-[0.08em] text-mist-500">
+            <span>12:41</span>
+            <span class="flex items-center gap-1.5 text-violet-200">
+              <span class="size-1.5 rounded-full bg-violet-500"></span>Live
             </span>
-            <a
-              href="#how"
-              class="inline-flex items-center gap-2 rounded-xl border border-ink-700 px-5 py-3 font-medium text-ink-200 transition-colors hover:border-ink-400 hover:text-ink-50"
-            >
-              See how it works
-            </a>
           </div>
 
-          <p class="mt-5 text-sm text-ink-400">
-            First interview free · No account · Built for placement season
-          </p>
-        </div>
+          <div
+            class="label self-start rounded-full border border-violet-line bg-violet-500/16 px-3 py-1.5 text-[9.5px] text-violet-200"
+          >
+            Round 2 · Resume Grill
+          </div>
 
-        <div class="lg:pl-4">
-          <Scorecard />
-          <p class="mt-3 text-center text-xs text-ink-400">
-            An actual scorecard. It is not kind.
+          <p class="text-[19px] leading-[1.35] font-semibold tracking-[-0.02em] text-mist-50">
+            Walk me through the caching layer on the delivery app you listed.
+          </p>
+
+          <div class="mt-auto flex h-[74px] items-end gap-[3px]" aria-hidden="true">
+            {
+              wave.map((h, i) => (
+                <div
+                  class:list={["w-[3px] rounded-sm", waveTone[i % 3]]}
+                  style={`height:${h}px`}
+                />
+              ))
+            }
+          </div>
+
+          <div class="flex items-center justify-between gap-3">
+            <span class="label text-[11px] tracking-[0.08em] text-mist-500">07:24 · Q 6 / 12</span>
+            <span
+              class="rounded-full bg-mist-50 px-5 py-[11px] text-[13.5px] font-semibold text-ink-880"
+              >End round</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="w-[270px] rounded-[22px] bg-white p-[22px] text-ink-880 shadow-[0_30px_70px_-24px_rgba(5,3,20,0.75)] lg:translate-y-8"
+      >
+        <div class="label mb-4 text-[9.5px] text-slate-500">Scorecard · Resume Grill</div>
+        <div class="mb-[18px] flex items-baseline gap-[9px]">
+          <span class="font-mono text-[44px] leading-none tracking-[-0.04em]">6.5</span>
+          <span class="font-mono text-xs text-slate-500">/ 10</span>
+        </div>
+        <div class="flex flex-col gap-3">
+          <p class="rounded-[14px] bg-violet-25 px-3.5 py-3 text-[13.5px] leading-[1.45] text-[#2E2A45]">
+            <span class="font-semibold">Structure:</span> opened with the fix, never stated the
+            problem.
+          </p>
+          <p class="rounded-[14px] bg-flag-bg px-3.5 py-3 text-[13.5px] leading-[1.45] text-flag-900">
+            <span class="font-semibold text-flag-600">Red flag:</span> couldn't name a tradeoff for
+            your own decision.
           </p>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- The insight -->
-  <section class="border-y border-ink-800 bg-ink-900">
-    <div class="mx-auto max-w-3xl px-5 py-16 text-center sm:py-20">
-      <h2 class="text-2xl font-bold text-ink-50 sm:text-3xl">
-        You don't fail interviews because you didn't know the answer.
-      </h2>
-      <p class="mt-5 text-lg leading-relaxed text-ink-400">
-        You fail because you'd never said it out loud before. Because you filled
-        the silence with "like". Because you listed the tools instead of
-        defending the decision. None of that shows up while you're reading.
-      </p>
-    </div>
-  </section>
-
-  <!-- How it works -->
-  <section id="how" class="scroll-mt-20">
-    <div class="mx-auto max-w-6xl px-5 py-20">
-      <h2 class="text-3xl font-bold text-ink-50">Three steps, five minutes</h2>
-      <div class="mt-12 grid gap-6 md:grid-cols-3">
-        {
-          steps.map((s) => (
-            <div class="relative rounded-2xl border border-ink-800 bg-ink-900 p-6">
-              <span class="text-sm font-bold tracking-widest text-ember-500">
-                {s.n}
-              </span>
-              <h3 class="mt-3 text-lg font-semibold text-ink-50">{s.title}</h3>
-              <p class="mt-2 leading-relaxed text-ink-400">{s.body}</p>
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 
   <!-- Rounds -->
-  <section id="rounds" class="scroll-mt-20 border-t border-ink-800 bg-ink-900">
-    <div class="mx-auto max-w-6xl px-5 py-20">
-      <h2 class="text-3xl font-bold text-ink-50">Pick your poison</h2>
-      <p class="mt-3 max-w-2xl text-ink-400">
-        Three rounds, one interviewer that has read what you gave it.
-      </p>
+  <section class="mx-auto max-w-[1180px] px-6 pt-24">
+    <div class="mb-11 flex flex-wrap items-end justify-between gap-7">
+      <div class="max-w-[30em]">
+        <div class="label mb-[18px] text-[11px] tracking-[0.13em] text-violet-500">The rounds</div>
+        <h2 class="text-[clamp(30px,3.6vw,46px)] leading-[1.05] font-bold tracking-[-0.04em]">
+          Three rounds, one interviewer
+        </h2>
+      </div>
+      <a
+        href="/how-it-works"
+        class="rounded-full border border-paper-500 px-[22px] py-[13px] text-[14.5px] font-semibold transition-colors hover:border-ink-880"
+        >How a session runs</a
+      >
+    </div>
 
-      <div class="mt-12 grid gap-6 md:grid-cols-3">
-        {
-          rounds.map((r) => (
-            <div class="rounded-2xl border border-ink-800 bg-ink-850 p-6 transition-colors hover:border-ink-700">
-              <span class="rounded-full border border-ink-700 px-2.5 py-1 text-[11px] uppercase tracking-wider text-ink-400">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(290px,1fr))] gap-5">
+      {
+        rounds.map((r) => (
+          <div
+            class:list={[
+              "flex flex-col gap-5 rounded-[26px] border p-7",
+              r.dark
+                ? "border-ink-950 bg-ink-950 text-mist-50 shadow-[0_34px_70px_-34px_rgba(11,10,18,0.6)]"
+                : "border-paper-300 bg-paper-100",
+            ]}
+          >
+            <div class="flex items-center justify-between">
+              <span
+                class:list={[
+                  "label text-[11px]",
+                  r.dark ? "text-mist-500" : "text-slate-500",
+                ]}
+              >
+                {r.n}
+              </span>
+              <span
+                class:list={[
+                  "label rounded-full px-3 py-1.5 text-[9.5px] tracking-[0.1em]",
+                  r.dark
+                    ? "bg-violet-500 text-white"
+                    : "border border-paper-400 bg-white text-violet-500",
+                ]}
+              >
                 {r.tag}
               </span>
-              <h3 class="mt-4 text-lg font-semibold text-ink-50">{r.title}</h3>
-              <p class="mt-2 leading-relaxed text-ink-400">{r.body}</p>
             </div>
-          ))
-        }
-      </div>
+            <h3 class="text-[23px] font-bold tracking-[-0.03em]">{r.title}</h3>
+            <p
+              class:list={[
+                "text-base leading-[1.55]",
+                r.dark ? "text-mist-400" : "text-slate-700",
+              ]}
+            >
+              {r.body}
+            </p>
+          </div>
+        ))
+      }
     </div>
   </section>
 
-  <!-- Pricing -->
-  <section id="pricing" class="scroll-mt-20">
-    <div class="mx-auto max-w-4xl px-5 py-20">
-      <h2 class="text-3xl font-bold text-ink-50">Priced for students</h2>
-      <p class="mt-3 text-ink-400">
-        A human mock interview costs ₹500–2,000. This is unlimited.
-      </p>
-
-      <div class="mt-12 grid gap-6 sm:grid-cols-2">
-        <div class="rounded-2xl border border-ink-800 bg-ink-900 p-7">
-          <p class="text-sm uppercase tracking-widest text-ink-400">Free</p>
-          <p class="mt-3 text-3xl font-bold text-ink-50">₹0</p>
-          <ul class="mt-6 space-y-3 text-sm text-ink-400">
-            <li>Your first interview, free</li>
-            <li>One a week after that</li>
-            <li>Five minutes, full scorecard</li>
-          </ul>
-        </div>
-
-        <div
-          class="relative rounded-2xl border border-ember-500/40 bg-ink-850 p-7"
-        >
-          <span
-            class="absolute -top-3 left-7 rounded-full bg-ember-500 px-3 py-1 text-xs font-bold text-ink-950"
-            >Pro</span
-          >
-          <p class="text-sm uppercase tracking-widest text-ink-400">
-            Placement season
-          </p>
-          <p class="mt-3 flex items-baseline gap-2">
-            <span class="text-3xl font-bold text-ink-50">₹499</span>
-            <span class="text-ink-400">/month</span>
-          </p>
-          <p class="mt-1 text-sm text-ink-400">or ₹1,999/year</p>
-          <ul class="mt-6 space-y-3 text-sm text-ink-200">
-            <li>Unlimited interviews</li>
-            <li>15-minute rounds</li>
-            <li>Resume Grill on your real CV</li>
-            <li>Progress across every mock</li>
-          </ul>
-        </div>
+  <!-- Scorecard split -->
+  <section class="mx-auto max-w-[1180px] px-6 pt-24">
+    <div class="mb-11 max-w-[34em]">
+      <div class="label mb-[18px] text-[11px] tracking-[0.13em] text-violet-500">
+        The scorecard is the product
       </div>
-    </div>
-  </section>
-
-  <!-- Close -->
-  <section class="border-t border-ink-800 bg-ink-900">
-    <div class="mx-auto max-w-3xl px-5 py-20 text-center">
-      <h2 class="text-3xl font-bold text-ink-50">
-        Be bad at this in private first.
+      <h2 class="mb-[18px] text-[clamp(30px,3.6vw,46px)] leading-[1.05] font-bold tracking-[-0.04em]">
+        It separates two things deliberately
       </h2>
-      <p class="mt-4 text-lg text-ink-400">
-        Placement season is short. Your first bad answer shouldn't cost you an
-        offer.
+      <p class="text-lg leading-[1.55] text-slate-700">
+        How you said it is arithmetic. Whether the answer was any good is judgement. Mixing the two
+        is how feedback becomes noise.
       </p>
-      <p
-        class="mt-8 inline-flex items-center gap-2 rounded-xl bg-ember-500 px-6 py-3.5 font-semibold text-ink-950"
+    </div>
+
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-5">
+      <div class="flex flex-col gap-[26px] rounded-[26px] bg-ink-950 p-8 text-mist-50">
+        <div>
+          <div class="label mb-4 text-[10px] text-mist-500">Delivery · computed in code</div>
+          <p class="text-base leading-[1.55] text-mist-400">
+            Filler-word counts, words per minute, speaking time. Never asked of the model, so the
+            numbers can't be hallucinated. Pace is measured against time actually spent talking, so
+            a nervous pause doesn't read as slow speech.
+          </p>
+        </div>
+        <dl class="mt-auto grid grid-cols-3 gap-3.5 border-t border-ink-700 pt-6 font-mono">
+          {
+            [
+              ["17", "Fillers"],
+              ["168", "WPM"],
+              ["9:12", "Talk time"],
+            ].map(([v, k]) => (
+              <div>
+                <dd class="mb-[7px] text-[27px] tracking-[-0.03em]">{v}</dd>
+                <dt class="label text-[9px] tracking-[0.1em] text-mist-500">{k}</dt>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <div class="flex flex-col gap-[22px] rounded-[26px] border border-violet-100 bg-violet-50 p-8">
+        <div>
+          <div class="label mb-4 text-[10px] text-violet-500">
+            Judgement · schema-validated JSON
+          </div>
+          <p class="text-base leading-[1.55] text-[#3B3557]">
+            A score out of 10, per-answer <em class="font-semibold text-ink-880 not-italic"
+              >"what you said → what a strong answer sounds like"</em
+            >, structure notes, and red flags.
+          </p>
+        </div>
+        <div class="mt-auto flex flex-col gap-3.5 rounded-[18px] bg-white p-[18px]">
+          <div>
+            <div class="label mb-2 text-[9px] text-slate-500">What you said</div>
+            <p class="text-[14.5px] leading-[1.5] text-mist-700">
+              "We added Redis because the database was slow and it got a lot faster."
+            </p>
+          </div>
+          <div class="h-px bg-paper-300"></div>
+          <div>
+            <div class="label mb-2 text-[9px] text-violet-500">
+              What a strong answer sounds like
+            </div>
+            <p class="text-[14.5px] leading-[1.5] text-ink-880">
+              "Reads outnumbered writes 40 to 1 and p95 was 900ms. We cached the payload for 90
+              seconds — p95 went to 60ms, and we accepted a 90-second staleness window because
+              menus change daily."
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5 grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-5">
+      <div class="rounded-[26px] border border-paper-300 bg-paper-100 p-7">
+        <div class="label mb-4 text-[10px] text-slate-500">Structure notes</div>
+        <p class="text-[15.5px] leading-[1.55] text-slate-700">
+          Nine of twelve answers opened with the solution. No numbers volunteered until asked.
+        </p>
+      </div>
+      <div class="rounded-[26px] border border-flag-line bg-flag-bg p-7">
+        <div class="label mb-4 text-[10px] text-flag-600">Red flags</div>
+        <p class="text-[15.5px] leading-[1.55] text-flag-900">
+          Couldn't name a tradeoff for a decision you made yourself. Credited "the team" for your
+          own work.
+        </p>
+      </div>
+      <a
+        href="/scorecard"
+        class="flex flex-col justify-between gap-6 rounded-[26px] bg-ink-950 p-7 text-mist-50 transition-colors hover:bg-violet-500"
       >
-        Coming to Android
+        <div class="label text-[10px] text-mist-500">Sample</div>
+        <div class="text-xl leading-[1.25] font-bold tracking-[-0.025em]">
+          Read a full scorecard, unedited →
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- The interrupt -->
+  <section class="mt-24 bg-ink-950 text-mist-50">
+    <div
+      class="mx-auto grid max-w-[1180px] grid-cols-[repeat(auto-fit,minmax(320px,1fr))] items-center gap-13 px-6 py-22"
+    >
+      <div>
+        <div class="label mb-5 text-[11px] tracking-[0.13em] text-violet-200">The interrupt</div>
+        <h2 class="mb-5 text-[clamp(28px,3.4vw,44px)] leading-[1.05] font-bold tracking-[-0.04em]">
+          A vague answer doesn't get a polite nod
+        </h2>
+        <p class="mb-[26px] max-w-[30em] text-[17.5px] leading-[1.55] text-mist-400">
+          It follows up when an answer stays fuzzy, and it cuts in when one keeps going after the
+          point is made — the way a tired interviewer on their fourth call of the day would.
+        </p>
+        <a
+          href="/how-it-works"
+          class="inline-block rounded-full bg-violet-500 px-[22px] py-[13px] text-[14.5px] font-semibold text-white transition-colors hover:bg-white hover:text-ink-880"
+          >How it works</a
+        >
+      </div>
+
+      <div class="rounded-[26px] border border-ink-700 bg-ink-900 p-[26px]">
+        <div class="label mb-[22px] flex items-center justify-between text-[10px] text-mist-500">
+          <span>Transcript · Resume Grill</span>
+          <span class="flex items-center gap-[7px] text-violet-200">
+            <span class="size-1.5 rounded-full bg-violet-500"></span>Recording
+          </span>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          {
+            transcript.map((line) => (
+              <div
+                class:list={[
+                  line.cut && "rounded-2xl border border-violet-line bg-violet-500/14 px-4 py-3.5",
+                  !line.cut && line.who === "You" && "border-l-2 border-ink-650 pl-4",
+                ]}
+              >
+                <div
+                  class:list={[
+                    "label mb-[7px] text-[9.5px]",
+                    line.cut ? "text-violet-300" : "text-mist-500",
+                  ]}
+                >
+                  {line.who}
+                </div>
+                <p
+                  class:list={[
+                    "text-[15.5px] leading-[1.45]",
+                    line.muted ? "text-mist-400" : "text-mist-50",
+                  ]}
+                >
+                  {line.text}
+                </p>
+              </div>
+            ))
+          }
+        </div>
+
+        <dl class="mt-[22px] grid grid-cols-3 gap-3 border-t border-ink-700 pt-5 font-mono">
+          {
+            [
+              ["Fillers", "3"],
+              ["WPM", "184"],
+              ["Talk time", "0:44"],
+            ].map(([k, v]) => (
+              <div>
+                <dt class="label mb-1.5 text-[9px] tracking-[0.1em] text-mist-500">{k}</dt>
+                <dd class="text-xl">{v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- Phone-first -->
+  <section class="mx-auto max-w-[1180px] px-6 py-24">
+    <div
+      class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-center gap-11 rounded-[32px] border border-paper-300 bg-paper-100 p-11"
+    >
+      <div>
+        <div class="label mb-[18px] text-[11px] tracking-[0.13em] text-violet-500">
+          On the phone, not the laptop
+        </div>
+        <h2 class="mb-[18px] text-[clamp(26px,3vw,38px)] leading-[1.08] font-bold tracking-[-0.035em]">
+          As easy to start as a phone call
+        </h2>
+        <p class="mb-[26px] max-w-[28em] text-[17px] leading-[1.6] text-slate-700">
+          Headphones in, resume already uploaded, ten minutes on the walk home. Every scorecard
+          stays in your history, so the next round can be compared to the last one.
+        </p>
+        <a
+          href="#waitlist"
+          class="inline-block rounded-full bg-ink-880 px-[26px] py-[15px] text-[15.5px] font-semibold text-white transition-colors hover:bg-violet-500"
+          >Get early access</a
+        >
+      </div>
+      <div
+        class="label flex aspect-4/3 items-center justify-center rounded-3xl border border-dashed border-paper-600 bg-white p-6 text-center text-[11px] tracking-[0.1em] text-slate-500"
+      >
+        App screenshot — round select &amp; history
+      </div>
+    </div>
+  </section>
+
+  <!-- Waitlist -->
+  <section
+    id="waitlist"
+    class="scroll-mt-24 bg-ink-950 text-mist-50"
+    style="background-image:radial-gradient(900px 420px at 50% 110%,rgba(108,75,255,0.4),rgba(11,10,18,0) 70%)"
+  >
+    <div class="mx-auto max-w-[1180px] px-6 py-24 text-center">
+      <h2
+        class="mx-auto mb-[18px] max-w-[22em] text-[clamp(30px,3.8vw,50px)] leading-[1.04] font-extrabold tracking-[-0.04em]"
+      >
+        Practise the part you can't practise by reading
+      </h2>
+      <p class="mx-auto mb-9 max-w-[34em] text-[17.5px] leading-[1.55] text-mist-400">
+        LetsMock is in closed beta on Android. Leave your email and you'll get an invite before the
+        Play Store listing goes live.
+      </p>
+      <Waitlist />
+      <p class="label text-[11px] tracking-[0.1em] text-mist-600">
+        Android first · No card required in beta
       </p>
     </div>
   </section>

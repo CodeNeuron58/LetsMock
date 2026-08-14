@@ -1,0 +1,110 @@
+---
+import Base from "../layouts/Base.astro";
+
+// Native <details> rather than a scripted accordion: keyboard and screen-reader
+// behaviour comes free, and the page still ships no JavaScript.
+const groups = [
+  {
+    heading: "The interview",
+    items: [
+      {
+        q: "How long does a round take?",
+        a: "Eight to twelve minutes of talking, plus a few seconds for the scorecard. Long enough to get nervous, short enough to do on a walk.",
+        open: true,
+      },
+      {
+        q: "What if I need a second to think?",
+        a: "Take it. The interviewer waits through a pause instead of talking over you, and pace is measured against the time you actually spent speaking — so thinking silently never reads as slow speech.",
+      },
+      {
+        q: "Why does it interrupt me?",
+        a: "Because real interviewers do, and a two-minute answer to a thirty-second question costs you the round. The interrupt fires when an answer keeps going after it has been made, or when it stays vague under a follow-up.",
+      },
+      {
+        q: "Can I use it without uploading a resume?",
+        a: "Yes — HR / Behavioural and CS Fundamentals need nothing from you. The Resume Grill is the one round that reads your PDF, because its questions come from your own projects.",
+      },
+    ],
+  },
+  {
+    heading: "Data, devices, billing",
+    items: [
+      {
+        q: "What happens to my resume and my recordings?",
+        a: "Your resume is used to generate questions for your own sessions and nothing else. Audio is transcribed for the interview and the scorecard; you can delete a session, its transcript and its scorecard from your history at any time.",
+      },
+      {
+        q: "Do I need headphones or a quiet room?",
+        a: "Headphones help, a studio doesn't. Anywhere you'd take a phone call works; heavy background noise makes the transcript, and therefore the delivery numbers, less exact.",
+      },
+      {
+        q: "Is there an iOS version?",
+        a: "Not yet. Android first, on the Play Store. Leave your email on the waitlist and mention iPhone — it's how the queue gets prioritised.",
+      },
+      {
+        q: "Will it get me the job?",
+        a: "No. It closes the gap between knowing an answer and saying it well, which is the part most people never practise. The rest is your work.",
+      },
+    ],
+  },
+];
+---
+
+<Base
+  title="FAQ — LetsMock"
+  description="How long a round takes, why it interrupts you, what happens to your resume and recordings, and whether there's an iOS version."
+>
+  <section class="mx-auto max-w-[820px] px-7 pt-18 pb-11">
+    <div class="label mb-[22px] text-[11px] tracking-[0.14em] text-violet-500">FAQ</div>
+    <h1 class="mb-[18px] text-[clamp(34px,4vw,52px)] leading-[1.05] font-extrabold tracking-[-0.042em]">
+      Questions people actually ask
+    </h1>
+    <p class="max-w-[32em] text-lg leading-[1.55] text-slate-700">
+      If yours isn't here, email <a
+        href="mailto:hello@letsmock.com"
+        class="text-violet-500 underline underline-offset-2">hello@letsmock.com</a
+      > and you'll get a real reply.
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-[820px] px-7 pb-10">
+    {
+      groups.map((group, gi) => (
+        <>
+          <div class:list={["label pb-4 text-[10.5px] text-slate-500", gi > 0 && "pt-11"]}>
+            {group.heading}
+          </div>
+          {group.items.map((item) => (
+            <details open={item.open} class="group border-t border-paper-400 last:border-b">
+              <summary class="flex cursor-pointer items-center justify-between gap-5 py-[22px] text-[17.5px] font-medium tracking-[-0.015em]">
+                <span>{item.q}</span>
+                <span
+                  class="font-mono text-lg text-violet-500 transition-transform group-open:rotate-45"
+                  aria-hidden="true"
+                >
+                  +
+                </span>
+              </summary>
+              <p class="mb-6 max-w-[36em] text-[16.5px] leading-[1.6] text-slate-700">{item.a}</p>
+            </details>
+          ))}
+        </>
+      ))
+    }
+  </section>
+
+  <section class="bg-ink-880 text-mist-50">
+    <div class="mx-auto max-w-[1180px] px-7 py-[74px] text-center">
+      <h2
+        class="mx-auto mb-7 max-w-[22em] text-[clamp(27px,3vw,38px)] leading-[1.1] font-extrabold tracking-[-0.042em]"
+      >
+        Closed beta, Android, invites in batches
+      </h2>
+      <a
+        href="/#waitlist"
+        class="inline-block rounded-full bg-violet-500 px-7 py-[15px] text-[15.5px] font-medium text-white transition-colors hover:bg-mist-50 hover:text-ink-880"
+        >Join the waitlist</a
+      >
+    </div>
+  </section>
+</Base>

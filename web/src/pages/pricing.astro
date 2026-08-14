@@ -1,0 +1,205 @@
+---
+import Base from "../layouts/Base.astro";
+
+// The billing toggle is two radios plus `has-[]` variants — no JavaScript, so
+// the page still ships nothing to the browser.
+const free = [
+  "2 interviews per month",
+  "HR / Behavioural and CS Fundamentals",
+  "Full delivery metrics",
+  "Score and red flags",
+  "Last 3 scorecards kept",
+];
+
+const pro = [
+  { text: "Unlimited interviews", strong: true },
+  { text: "Resume Grill on your uploaded PDF", strong: true },
+  { text: "Answer-by-answer rewrites" },
+  { text: "Full transcript per session" },
+  { text: "Progress across rounds over time" },
+  { text: "Unlimited scorecard history" },
+];
+
+const campus = [
+  "Everything in Pro for every student",
+  "Cohort dashboard for coordinators",
+  "Question banks tuned to your recruiters",
+  "Bulk invites, no per-student setup",
+];
+
+const notes = [
+  {
+    k: "During beta",
+    v: "Everyone on the waitlist gets Pro free while LetsMock is in closed beta. No card, no trial countdown.",
+  },
+  {
+    k: "Cancelling",
+    v: "Monthly billing through Google Play, cancel from your Play subscriptions at any time. Your scorecards stay readable.",
+  },
+  {
+    k: "Students",
+    v: "Half price on Pro with a college ID. Email us and we'll send a code.",
+  },
+];
+
+const toggle =
+  "cursor-pointer rounded-full px-5 py-[9px] text-sm font-medium transition-colors";
+---
+
+<Base
+  title="Pricing — LetsMock"
+  description="Free forever for two interviews a month. Pro removes the limit and unlocks the Resume Grill. Campus plans for placement cells."
+>
+  <div class="group">
+    <input type="radio" name="cycle" id="monthly" class="sr-only" checked />
+    <input type="radio" name="cycle" id="annual" class="sr-only" />
+
+    <section class="mx-auto max-w-[1180px] px-7 pt-18 pb-10 text-center">
+      <div class="label mb-[22px] text-[11px] tracking-[0.14em] text-violet-500">Pricing</div>
+      <h1
+        class="mx-auto mb-5 max-w-[20em] text-[clamp(34px,4vw,54px)] leading-[1.05] font-extrabold tracking-[-0.042em]"
+      >
+        Cheaper than one bad interview
+      </h1>
+      <p class="mx-auto mb-9 max-w-[32em] text-[18.5px] leading-[1.55] text-slate-700">
+        Every plan includes the full scorecard. Paid plans remove the interview limit and unlock the
+        Resume Grill.
+      </p>
+
+      <div class="inline-flex gap-0.5 rounded-full bg-paper-300 p-1">
+        <label
+          for="monthly"
+          class:list={[
+            toggle,
+            "text-mist-700 group-has-[#monthly:checked]:bg-ink-880 group-has-[#monthly:checked]:text-paper-100 group-has-[#monthly:checked]:shadow-sm hover:text-ink-880",
+          ]}>Monthly</label
+        >
+        <label
+          for="annual"
+          class:list={[
+            toggle,
+            "text-mist-700 group-has-[#annual:checked]:bg-ink-880 group-has-[#annual:checked]:text-paper-100 group-has-[#annual:checked]:shadow-sm hover:text-ink-880",
+          ]}>Yearly · 2 months free</label
+        >
+      </div>
+    </section>
+
+    <section
+      class="mx-auto grid max-w-[1180px] grid-cols-[repeat(auto-fit,minmax(290px,1fr))] items-start gap-[22px] px-7 pb-9"
+    >
+      <!-- Free -->
+      <div class="flex flex-col gap-[22px] rounded-[26px] border border-paper-400 bg-white p-[30px]">
+        <div>
+          <h2 class="mb-2 text-xl font-bold tracking-[-0.028em]">Free</h2>
+          <p class="text-[14.5px] leading-[1.5] text-mist-700">Find out how you sound.</p>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="font-mono text-[40px] tracking-[-0.03em]">₹0</span>
+          <span class="label text-[11px] tracking-[0.08em] text-slate-500">Forever</span>
+        </div>
+        <a
+          href="/#waitlist"
+          class="rounded-full border border-paper-600 px-5 py-[13px] text-center text-[15px] font-medium transition-colors hover:border-ink-880"
+          >Start free</a
+        >
+        <ul class="flex list-disc flex-col gap-[11px] pl-5 text-[14.5px] leading-[1.5] text-slate-700">
+          {free.map((f) => <li>{f}</li>)}
+        </ul>
+      </div>
+
+      <!-- Pro -->
+      <div
+        class="flex flex-col gap-[22px] rounded-[26px] border border-ink-880 bg-ink-880 p-[30px] text-mist-50 shadow-[0_30px_60px_-34px_rgba(20,18,28,0.55)]"
+      >
+        <div>
+          <div class="mb-2 flex items-center justify-between gap-3">
+            <h2 class="text-xl font-bold tracking-[-0.028em]">Pro</h2>
+            <span class="label rounded-full bg-violet-500 px-[9px] py-[5px] text-[9.5px] text-white"
+              >Most picked</span
+            >
+          </div>
+          <p class="text-[14.5px] leading-[1.5] text-mist-400">
+            For the four weeks before your interviews.
+          </p>
+        </div>
+
+        <div class="flex items-baseline gap-2 group-has-[#annual:checked]:hidden">
+          <span class="font-mono text-[40px] tracking-[-0.03em]">₹399</span>
+          <span class="label text-[11px] tracking-[0.08em] text-mist-500">/ month</span>
+        </div>
+        <div class="hidden items-baseline gap-2 group-has-[#annual:checked]:flex">
+          <span class="font-mono text-[40px] tracking-[-0.03em]">₹3,999</span>
+          <span class="label text-[11px] tracking-[0.08em] text-mist-500">/ year</span>
+        </div>
+
+        <a
+          href="/#waitlist"
+          class="rounded-full bg-violet-500 px-5 py-[13px] text-center text-[15px] font-medium text-white transition-colors hover:bg-mist-50 hover:text-ink-880"
+          >Get Pro at launch</a
+        >
+        <ul class="flex list-disc flex-col gap-[11px] pl-5 text-[14.5px] leading-[1.5] text-mist-400">
+          {pro.map((p) => <li class={p.strong ? "text-mist-50" : undefined}>{p.text}</li>)}
+        </ul>
+      </div>
+
+      <!-- Campus -->
+      <div class="flex flex-col gap-[22px] rounded-[26px] border border-paper-400 bg-white p-[30px]">
+        <div>
+          <h2 class="mb-2 text-xl font-bold tracking-[-0.028em]">Campus</h2>
+          <p class="text-[14.5px] leading-[1.5] text-mist-700">
+            Colleges, bootcamps, placement cells.
+          </p>
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span class="font-mono text-[40px] tracking-[-0.03em]">Talk</span>
+          <span class="label text-[11px] tracking-[0.08em] text-slate-500">Per cohort</span>
+        </div>
+        <a
+          href="mailto:hello@letsmock.com"
+          class="rounded-full border border-paper-600 px-5 py-[13px] text-center text-[15px] font-medium transition-colors hover:border-ink-880"
+          >Email us</a
+        >
+        <ul class="flex list-disc flex-col gap-[11px] pl-5 text-[14.5px] leading-[1.5] text-slate-700">
+          {campus.map((c) => <li>{c}</li>)}
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <section class="mx-auto max-w-[1180px] px-7 pt-4 pb-19">
+    <dl
+      class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-[26px] rounded-3xl border border-paper-400 bg-paper-100 px-[30px] py-[26px]"
+    >
+      {
+        notes.map((n) => (
+          <div>
+            <dt class="label mb-2.5 text-[10px] text-slate-500">{n.k}</dt>
+            <dd class="text-[15.5px] leading-[1.55] text-slate-700">{n.v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="bg-ink-880 text-mist-50">
+    <div
+      class="mx-auto grid max-w-[1180px] grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-center gap-10 px-7 py-19"
+    >
+      <h2 class="text-[clamp(26px,3vw,38px)] leading-[1.1] font-extrabold tracking-[-0.042em]">
+        Still deciding? Read a scorecard first.
+      </h2>
+      <div class="flex flex-wrap gap-3 lg:justify-end">
+        <a
+          href="/scorecard"
+          class="rounded-full bg-violet-500 px-[26px] py-[15px] text-[15.5px] font-medium text-white transition-colors hover:bg-mist-50 hover:text-ink-880"
+          >See a sample scorecard</a
+        >
+        <a
+          href="/faq"
+          class="rounded-full border border-ink-650 px-[26px] py-[15px] text-[15.5px] font-medium text-mist-50 transition-colors hover:border-mist-50"
+          >Read the FAQ</a
+        >
+      </div>
+    </div>
+  </section>
+</Base>

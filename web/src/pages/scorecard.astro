@@ -1,0 +1,187 @@
+---
+import Base from "../layouts/Base.astro";
+
+const delivery = [
+  ["17", "Filler words", "um ×9, like ×5, basically ×3"],
+  ["168", "Words / minute", "measured over talk time only"],
+  ["9:12", "Speaking time", "of a 14:40 session"],
+  ["46s", "Longest answer", "Q7, the migration question"],
+];
+
+const answers = [
+  {
+    q: "Q3 · Why Redis in front of Postgres, and what did it cost you?",
+    said: "\"We added Redis because the database was slow and it got a lot faster after that.\"",
+    strong:
+      "\"Reads outnumbered writes about 40 to 1 and p95 on the menu endpoint was 900ms. We cached the payload for 90 seconds, which took p95 to 60ms and bought us a 90-second staleness window — acceptable because menus change daily, not hourly.\"",
+  },
+  {
+    q: "Q8 · Tell me about a time you disagreed with a teammate's approach",
+    said: "\"There was some friction but we sorted it out and shipped on time, so it was fine in the end.\"",
+    strong:
+      "\"He wanted to hand-roll auth; I wanted a provider. I wrote down the two failure modes I was worried about, we spiked the provider for a day, and the spike settled it. I'd still push for the spike over the argument.\"",
+  },
+];
+
+const structure = [
+  "Nine of twelve answers opened with the solution. State the problem first.",
+  "No numbers volunteered until asked. You have them; lead with them.",
+  "Answers ran long past the point they were made — the interrupt fired twice.",
+];
+
+const flags = [
+  "Couldn't name a tradeoff for a decision you made yourself.",
+  "Credited \"the team\" for work the resume attributes to you.",
+  "Said \"I don't remember\" about a project listed as current.",
+];
+---
+
+<Base
+  title="The scorecard — LetsMock"
+  description="A real LetsMock scorecard, unedited: delivery numbers computed in code, then answer-by-answer judgement, structure notes and red flags."
+>
+  <section
+    class="mx-auto grid max-w-[1180px] grid-cols-[repeat(auto-fit,minmax(340px,1fr))] items-end gap-11 px-7 pt-18 pb-11"
+  >
+    <div>
+      <div class="label mb-[22px] text-[11px] tracking-[0.14em] text-violet-500">The scorecard</div>
+      <h1 class="mb-5 text-[clamp(34px,4vw,54px)] leading-[1.05] font-extrabold tracking-[-0.042em]">
+        A real one, unedited
+      </h1>
+      <p class="max-w-[34em] text-[18.5px] leading-[1.55] text-slate-700">
+        This is what lands after a round. Numbers at the top are arithmetic. Everything below them is
+        judgement, and it says so.
+      </p>
+    </div>
+    <p class="label text-[11.5px] leading-[1.8] text-slate-500">
+      Session 04 · Resume Grill<br />11 Aug 2026 · 12 questions · 9:12 spoken
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-[1180px] px-7 pb-10">
+    <div class="overflow-hidden rounded-[30px] border border-paper-400 bg-white">
+      <!-- Overall -->
+      <div
+        class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-center gap-7 border-b border-paper-300 p-8"
+      >
+        <div class="flex items-baseline gap-4">
+          <span class="font-mono text-[58px] leading-none tracking-[-0.03em]">6.5</span>
+          <div>
+            <div class="label text-xs tracking-[0.1em] text-slate-500">/ 10</div>
+            <div class="mt-1.5 text-[15px] text-slate-700">Resume Grill</div>
+          </div>
+        </div>
+        <p class="text-base leading-[1.55] text-slate-700">
+          You know your projects. You describe them backwards — the fix first, the problem never.
+          Two of twelve answers had no stated constraint, which is what an interviewer is actually
+          listening for.
+        </p>
+      </div>
+
+      <!-- Delivery -->
+      <div class="border-b border-paper-300 bg-paper-50 p-8">
+        <div class="mb-[26px] flex flex-wrap items-baseline justify-between gap-5">
+          <h2 class="text-[19px] font-bold tracking-[-0.028em]">Delivery</h2>
+          <span class="label text-[10px] text-violet-500">
+            Computed in code · not asked of the model
+          </span>
+        </div>
+        <dl class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-6">
+          {
+            delivery.map(([value, label, note]) => (
+              <div>
+                <dd class="mb-[7px] font-mono text-[32px] tracking-[-0.02em]">{value}</dd>
+                <dt class="label mb-1.5 text-[9.5px] tracking-[0.1em] text-slate-500">{label}</dt>
+                <p class="text-[13.5px] text-mist-700">{note}</p>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <!-- Answers -->
+      <div class="border-b border-paper-300 p-8">
+        <div class="mb-[26px] flex flex-wrap items-baseline justify-between gap-5">
+          <h2 class="text-[19px] font-bold tracking-[-0.028em]">Answer by answer</h2>
+          <span class="label text-[10px] text-slate-500">Judgement · LLM, schema-validated</span>
+        </div>
+
+        <div class="flex flex-col gap-[26px]">
+          {
+            answers.map((a) => (
+              <div class="overflow-hidden rounded-[18px] border border-paper-300">
+                <p class="border-b border-paper-300 bg-paper-50 px-5 py-4 text-[15.5px] font-medium">
+                  {a.q}
+                </p>
+                <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
+                  <div class="border-paper-300 p-5 lg:border-r">
+                    <div class="label mb-[11px] text-[9.5px] text-slate-500">What you said</div>
+                    <p class="text-[15px] leading-[1.55] text-mist-700">{a.said}</p>
+                  </div>
+                  <div class="bg-violet-25 p-5">
+                    <div class="label mb-[11px] text-[9.5px] text-violet-500">
+                      What a strong answer sounds like
+                    </div>
+                    <p class="text-[15px] leading-[1.55] text-[#1E1B2E]">{a.strong}</p>
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Notes and flags -->
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+        <div class="border-paper-300 p-8 lg:border-r">
+          <h2 class="mb-5 text-[19px] font-bold tracking-[-0.028em]">Structure notes</h2>
+          <ul class="flex list-disc flex-col gap-[13px] pl-5 text-[15.5px] leading-[1.55] text-slate-700">
+            {structure.map((s) => <li>{s}</li>)}
+          </ul>
+        </div>
+        <div class="bg-flag-bg p-8">
+          <h2 class="mb-5 text-[19px] font-bold tracking-[-0.028em] text-flag-600">Red flags</h2>
+          <ul class="flex list-disc flex-col gap-[13px] pl-5 text-[15.5px] leading-[1.55] text-flag-900">
+            {flags.map((f) => <li>{f}</li>)}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JSON peek -->
+  <section class="mx-auto max-w-[1180px] px-7 pt-6 pb-20">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] items-center gap-9">
+      <div>
+        <h2 class="mb-3.5 text-2xl font-bold tracking-[-0.03em]">Validated before you see it</h2>
+        <p class="max-w-[32em] text-[16.5px] leading-[1.6] text-slate-700">
+          The judgement half comes back as JSON against a fixed schema. If a field is missing or
+          malformed, the round is re-scored rather than shown to you half-built.
+        </p>
+      </div>
+      <pre
+        class="overflow-x-auto rounded-3xl bg-ink-880 p-6 font-mono text-[12.5px] leading-[1.75] text-mist-400"><code><span class="text-mist-500">&#123;</span>
+  <span class="text-violet-300">"score"</span>: <span class="text-mist-50">6.5</span>,
+  <span class="text-violet-300">"answers"</span>: [&#123; <span class="text-violet-300">"said"</span>, <span class="text-violet-300">"strong"</span> &#125;],
+  <span class="text-violet-300">"structure_notes"</span>: [<span class="text-mist-50">3</span>],
+  <span class="text-violet-300">"red_flags"</span>: [<span class="text-mist-50">3</span>]
+<span class="text-mist-500">&#125;</span>
+<span class="label mt-3.5 inline-block border-t border-ink-700 pt-3.5 text-[10.5px] tracking-[0.1em] text-mist-500">Delivery metrics are not in this payload</span></code></pre>
+    </div>
+  </section>
+
+  <section class="bg-ink-880 text-mist-50">
+    <div class="mx-auto max-w-[1180px] px-7 py-19 text-center">
+      <h2
+        class="mx-auto mb-7 max-w-[22em] text-[clamp(28px,3.2vw,40px)] leading-[1.1] font-extrabold tracking-[-0.042em]"
+      >
+        Get one of these about your own answers
+      </h2>
+      <a
+        href="/#waitlist"
+        class="inline-block rounded-full bg-violet-500 px-7 py-[15px] text-[15.5px] font-medium text-white transition-colors hover:bg-mist-50 hover:text-ink-880"
+        >Join the waitlist</a
+      >
+    </div>
+  </section>
+</Base>

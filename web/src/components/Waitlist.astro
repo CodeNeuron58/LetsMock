@@ -1,0 +1,23 @@
+---
+// The form has no action yet — a static site can't collect emails on its own.
+// Wire it to a form endpoint (Formspree, a Cloudflare Worker, RevenueCat's
+// web2app funnel) before pointing anyone at it.
+---
+
+<div class="mx-auto mb-4 flex max-w-[540px] flex-wrap justify-center gap-2.5">
+  <label for="waitlist-email" class="sr-only">Email address</label>
+  <input
+    id="waitlist-email"
+    type="email"
+    name="email"
+    required
+    placeholder="you@email.com"
+    class="min-w-0 flex-[1_1_250px] rounded-full border border-white/18 bg-white/6 px-5 py-4 text-[15.5px] text-mist-50 outline-none placeholder:text-mist-600 focus-visible:border-violet-500"
+  />
+  <button
+    type="submit"
+    class="cursor-pointer rounded-full bg-violet-500 px-7 py-4 text-[15.5px] font-semibold text-white shadow-[0_16px_40px_-16px_rgba(108,75,255,0.9)] transition-colors hover:bg-white hover:text-ink-880"
+  >
+    Request an invite
+  </button>
+</div>

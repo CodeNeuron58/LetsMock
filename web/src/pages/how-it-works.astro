@@ -1,0 +1,143 @@
+---
+import Base from "../layouts/Base.astro";
+
+const steps = [
+  {
+    n: "01",
+    title: "Upload your resume",
+    body: "A PDF, once. It's parsed for projects, roles and claims, and that becomes the question bank for the Resume Grill round. Skip it and you still get HR and CS Fundamentals.",
+  },
+  {
+    n: "02",
+    title: "Pick a round",
+    body: "HR / Behavioural, Resume Grill, or CS Fundamentals. One interviewer runs all three — the questions change, the pressure doesn't.",
+  },
+  {
+    n: "03",
+    title: "Talk",
+    body: "Real-time voice, both ways. It waits when you pause to think instead of cutting you off mid-thought, and it follows up when an answer stays vague. If you ramble, it interrupts — the same way a tired interviewer on their fourth call of the day would.",
+  },
+  {
+    n: "04",
+    title: "Get the scorecard",
+    body: "Delivery numbers, a score out of 10, a rewrite of each answer, structure notes and red flags. It lands seconds after the round ends, and it stays in your history so the next one can be compared to it.",
+  },
+];
+
+const deterministic = [
+  "Filler-word counts, straight off the transcript",
+  "Words per minute, measured against time actually spent talking",
+  "Total speaking time versus session length",
+  "Never asked of the model, so the numbers can't be hallucinated",
+];
+
+const judgement = [
+  "A score out of 10 for the round",
+  "Per answer: what you said, then what a strong answer sounds like",
+  "Structure notes — did the answer have a shape",
+  "Red flags worth fixing before a real screen",
+];
+---
+
+<Base
+  title="How it works — LetsMock"
+  description="A LetsMock session is a conversation, not a form: upload a resume, pick a round, talk for eight to twelve minutes, and get a scorecard."
+>
+  <section class="mx-auto max-w-[1180px] px-7 pt-18 pb-14">
+    <div class="label mb-[22px] text-[11px] tracking-[0.14em] text-violet-500">How it works</div>
+    <h1
+      class="mb-[22px] max-w-[26em] text-[clamp(34px,4vw,54px)] leading-[1.05] font-extrabold tracking-[-0.042em]"
+    >
+      A session is a conversation, not a form
+    </h1>
+    <p class="max-w-[36em] text-[18.5px] leading-[1.55] text-slate-700">
+      You talk, it listens, it pushes back. Nothing is typed except your resume upload. A round runs
+      eight to twelve minutes and ends with a scorecard.
+    </p>
+  </section>
+
+  <section class="mx-auto flex max-w-[1180px] flex-col px-7 pb-21">
+    {
+      steps.map((s) => (
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-8 border-t border-paper-400 py-[34px]">
+          <div class="flex items-baseline gap-5">
+            <span class="label text-xs text-violet-500">{s.n}</span>
+            <h2 class="text-2xl font-bold tracking-[-0.03em]">{s.title}</h2>
+          </div>
+          <p class="max-w-[44em] text-[16.5px] leading-[1.6] text-slate-700 lg:col-span-2">
+            {s.body}
+          </p>
+        </div>
+      ))
+    }
+    <div class="border-t border-paper-400"></div>
+  </section>
+
+  <section class="bg-ink-880 text-mist-50">
+    <div class="mx-auto max-w-[1180px] px-7 py-21">
+      <div class="mb-11 max-w-[42em]">
+        <div class="label mb-5 text-[11px] tracking-[0.14em] text-mist-500">Under the hood</div>
+        <h2
+          class="mb-[18px] text-[clamp(28px,3.2vw,40px)] leading-[1.1] font-extrabold tracking-[-0.042em]"
+        >
+          Two different machines produce the feedback
+        </h2>
+        <p class="text-[17.5px] leading-[1.55] text-mist-400">
+          Counting is not judgement. Keeping them apart is what makes the scorecard trustworthy.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-6">
+        <div class="rounded-[26px] border border-ink-650 bg-ink-850 p-[30px]">
+          <div class="label mb-5 text-[10.5px] text-mist-500">Deterministic · in code</div>
+          <ul class="flex list-disc flex-col gap-[13px] pl-5 text-[15.5px] leading-[1.5] text-mist-400">
+            {deterministic.map((i) => <li>{i}</li>)}
+          </ul>
+        </div>
+        <div class="rounded-[26px] border border-violet-600 bg-ink-850 p-[30px]">
+          <div class="label mb-5 text-[10.5px] text-violet-300">
+            Judgement · LLM, schema-validated
+          </div>
+          <ul class="flex list-disc flex-col gap-[13px] pl-5 text-[15.5px] leading-[1.5] text-mist-400">
+            {judgement.map((i) => <li>{i}</li>)}
+          </ul>
+        </div>
+      </div>
+
+      <p class="mt-[30px] font-mono text-[11.5px] leading-[1.7] text-mist-500">
+        A nervous pause is a pause. It is not slow speech, and the scorecard doesn't confuse the two.
+      </p>
+    </div>
+  </section>
+
+  <section
+    class="mx-auto grid max-w-[1180px] grid-cols-[repeat(auto-fit,minmax(320px,1fr))] items-center gap-12 px-7 pt-19 pb-22"
+  >
+    <div>
+      <h2 class="mb-4 text-[clamp(26px,2.8vw,36px)] font-bold tracking-[-0.04em]">
+        Ready to be interrupted?
+      </h2>
+      <p class="mb-7 max-w-[30em] text-[17px] leading-[1.6] text-slate-700">
+        Closed beta on Android. Invites go out in batches.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a
+          href="/#waitlist"
+          class="rounded-full bg-violet-500 px-[26px] py-[15px] text-[15.5px] font-medium text-white transition-colors hover:bg-ink-880"
+          >Join the waitlist</a
+        >
+        <a
+          href="/pricing"
+          class="rounded-full border border-paper-600 px-[26px] py-[15px] text-[15.5px] font-medium transition-colors hover:border-ink-880"
+          >See pricing</a
+        >
+      </div>
+    </div>
+    <div
+      class="label flex aspect-16/10 items-center justify-center rounded-3xl border border-dashed border-paper-600 p-5 text-center text-[11px] tracking-[0.1em] text-slate-500"
+      style="background:repeating-linear-gradient(135deg,#EDEBF5 0 10px,#F2F1F9 10px 20px)"
+    >
+      App screenshot — round select
+    </div>
+  </section>
+</Base>

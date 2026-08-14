@@ -1,34 +1,58 @@
 @import "tailwindcss";
 
-/* The palette. Warm charcoal rather than pure black, and an ember accent —
-   the product's promise is that it grills you before the real interview. */
+/* Design tokens taken from the LetsMock design files. Dark hero and footer,
+   light body, one violet accent, mono for anything numeric or label-like. */
 @theme {
-  --color-ink-950: #0a0a0b;
-  --color-ink-900: #101012;
-  --color-ink-850: #17171a;
-  --color-ink-800: #1f1f23;
-  --color-ink-700: #2c2c32;
-  --color-ink-400: #8a8a93;
-  --color-ink-200: #d6d6da;
-  --color-ink-50: #f7f7f8;
+  /* Ink — dark surfaces and body text */
+  --color-ink-950: #0b0a12;
+  --color-ink-900: #12101c;
+  --color-ink-880: #14121c;
+  --color-ink-850: #181524;
+  --color-ink-800: #1a1626;
+  --color-ink-700: #241f38;
+  --color-ink-650: #2a2540;
+  --color-ink-600: #302a46;
+  --color-ink-550: #1c1830;
 
-  --color-ember-400: #ff9f6b;
-  --color-ember-500: #ff7a45;
-  --color-ember-600: #e85f28;
+  /* Violet — the single accent */
+  --color-violet-600: #4a32a8;
+  --color-violet-500: #6c4bff;
+  --color-violet-300: #b9a6ff;
+  --color-violet-200: #c3b9f5;
+  --color-violet-100: #ded6ff;
+  --color-violet-50: #f0edff;
+  --color-violet-25: #f6f3ff;
+  --color-violet-line: #3b2c74;
 
-  /* Score colours, matching the app's scorecard exactly. */
-  --color-score-good: #34d399;
-  --color-score-mid: #fbbf24;
-  --color-score-bad: #f87171;
+  /* Text on dark */
+  --color-mist-50: #f2f1f7;
+  --color-mist-200: #c4c0d6;
+  --color-mist-400: #a9a4be;
+  --color-mist-500: #8c86a6;
+  --color-mist-600: #7c7699;
+  --color-mist-700: #6e6890;
 
-  --font-sans:
-    "Inter var", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    sans-serif;
-}
+  /* Text and lines on light */
+  --color-slate-700: #514c6b;
+  --color-slate-600: #5a5670;
+  --color-slate-500: #8b85a8;
+  --color-paper-50: #fafafd;
+  --color-paper-100: #f7f6fb;
+  --color-paper-150: #f4f3f8;
+  --color-paper-200: #f1eff9;
+  --color-paper-300: #edebf5;
+  --color-paper-400: #e7e5f0;
+  --color-paper-500: #e0ddec;
+  --color-paper-600: #d6d3e4;
 
-html {
-  scroll-behavior: smooth;
-  background-color: var(--color-ink-950);
+  /* Red flags */
+  --color-flag-bg: #fff3ee;
+  --color-flag-line: #fadacb;
+  --color-flag-600: #c24a1e;
+  --color-flag-900: #6b3a2a;
+
+  --font-sans: "Plus Jakarta Sans", Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
 body {
@@ -40,13 +64,29 @@ h1,
 h2,
 h3 {
   text-wrap: balance;
-  letter-spacing: -0.025em;
+}
+
+::selection {
+  background: var(--color-violet-500);
+  color: #fff;
+}
+
+/* Mono micro-label: the recurring uppercase, wide-tracked caption. */
+@utility label {
+  font-family: var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* The FAQ and transcript use <details>; hide the default marker. */
+summary::-webkit-details-marker {
+  display: none;
+}
+summary {
+  list-style: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
   *,
   *::before,
   *::after {

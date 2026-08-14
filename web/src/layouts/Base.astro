@@ -48,7 +48,15 @@ const nav = [
     />
   </head>
 
-  <body class="bg-white font-sans text-ink-880 antialiased">
+  <!-- The dark pages float the nav over the hero, so the page background has to
+       be dark too: any rounding gap between the nav's height and the hero's
+       negative offset would otherwise show up as a white hairline at the top. -->
+  <body
+    class:list={[
+      "font-sans antialiased",
+      dark ? "bg-ink-950 text-mist-50" : "bg-white text-ink-880",
+    ]}
+  >
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[70] focus:rounded-full focus:bg-violet-500 focus:px-5 focus:py-2.5 focus:text-white"

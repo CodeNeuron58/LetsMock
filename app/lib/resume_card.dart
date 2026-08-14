@@ -51,7 +51,9 @@ class _ResumeCardState extends State<ResumeCard> {
       final resume = await uploadResume(file!.path!, file.name);
       if (mounted) setState(() => _resume = resume);
     } catch (e) {
-      if (mounted) setState(() => _error = '$e'.replaceFirst('Exception: ', ''));
+      if (mounted) {
+        setState(() => _error = '$e'.replaceFirst('Exception: ', ''));
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -77,7 +79,10 @@ class _ResumeCardState extends State<ResumeCard> {
         ),
         trailing: _busy
             ? const SizedBox(
-                width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
             : TextButton(
                 onPressed: _pickAndUpload,
                 child: Text(attached ? 'Replace' : 'Upload'),

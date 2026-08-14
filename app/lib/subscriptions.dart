@@ -42,6 +42,7 @@ class Subscriptions {
   /// Show the paywall. Returns true if the user came back with Pro.
   static Future<bool> showPaywall() async {
     final result = await RevenueCatUI.presentPaywall(displayCloseButton: true);
-    return result == PaywallResult.purchased || result == PaywallResult.restored;
+    return result == PaywallResult.purchased ||
+        result == PaywallResult.restored;
   }
 }

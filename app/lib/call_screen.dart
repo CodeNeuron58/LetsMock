@@ -27,7 +27,8 @@ class _CallScreenState extends State<CallScreen> {
   String _status = 'Getting ready…';
   bool _connected = false;
   bool _failed = false;
-  String? _roomName; // set once the session exists; needed to fetch the scorecard
+  String?
+  _roomName; // set once the session exists; needed to fetch the scorecard
 
   @override
   void initState() {
@@ -57,7 +58,9 @@ class _CallScreenState extends State<CallScreen> {
 
       // 3. Wire up room events, then connect.
       _listener = _lkRoom.createListener()
-        ..on<RoomConnectedEvent>((_) => _setStatus('Connected', connected: true))
+        ..on<RoomConnectedEvent>(
+          (_) => _setStatus('Connected', connected: true),
+        )
         ..on<RoomDisconnectedEvent>((_) => _setStatus('Interview ended'))
         ..on<TrackSubscribedEvent>((_) => _refresh());
 
@@ -157,7 +160,10 @@ class _CallScreenState extends State<CallScreen> {
               Text(
                 widget.mode.label,
                 style: const TextStyle(
-                    color: Colors.white, fontSize: 22, fontWeight: FontWeight.w600),
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),

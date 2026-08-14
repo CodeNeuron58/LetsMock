@@ -18,12 +18,12 @@ class AnswerEvaluation {
   final List<String> flags;
 
   factory AnswerEvaluation.fromJson(Map<String, dynamic> j) => AnswerEvaluation(
-        question: j['question'] as String? ?? '',
-        whatYouSaid: j['what_you_said'] as String? ?? '',
-        strongAnswer: j['strong_answer'] as String? ?? '',
-        score: (j['score'] as num?)?.toDouble() ?? 0,
-        flags: _strings(j['flags']),
-      );
+    question: j['question'] as String? ?? '',
+    whatYouSaid: j['what_you_said'] as String? ?? '',
+    strongAnswer: j['strong_answer'] as String? ?? '',
+    score: (j['score'] as num?)?.toDouble() ?? 0,
+    flags: _strings(j['flags']),
+  );
 }
 
 class Assessment {
@@ -46,16 +46,16 @@ class Assessment {
   final List<AnswerEvaluation> perAnswer;
 
   factory Assessment.fromJson(Map<String, dynamic> j) => Assessment(
-        overallScore: (j['overall_score'] as num?)?.toDouble() ?? 0,
-        summary: j['summary'] as String? ?? '',
-        strengths: _strings(j['strengths']),
-        weaknesses: _strings(j['weaknesses']),
-        redFlags: _strings(j['red_flags']),
-        structureNote: j['structure_note'] as String? ?? '',
-        perAnswer: ((j['per_answer'] as List?) ?? const [])
-            .map((e) => AnswerEvaluation.fromJson(_map(e)))
-            .toList(),
-      );
+    overallScore: (j['overall_score'] as num?)?.toDouble() ?? 0,
+    summary: j['summary'] as String? ?? '',
+    strengths: _strings(j['strengths']),
+    weaknesses: _strings(j['weaknesses']),
+    redFlags: _strings(j['red_flags']),
+    structureNote: j['structure_note'] as String? ?? '',
+    perAnswer: ((j['per_answer'] as List?) ?? const [])
+        .map((e) => AnswerEvaluation.fromJson(_map(e)))
+        .toList(),
+  );
 }
 
 class SpeechMetrics {
@@ -74,13 +74,14 @@ class SpeechMetrics {
   final Map<String, int> fillerBreakdown;
 
   factory SpeechMetrics.fromJson(Map<String, dynamic> j) => SpeechMetrics(
-        wordCount: (j['candidate_word_count'] as num?)?.toInt() ?? 0,
-        speakingSeconds: (j['speaking_seconds'] as num?)?.toDouble() ?? 0,
-        wordsPerMinute: (j['words_per_minute'] as num?)?.toDouble() ?? 0,
-        fillerWordCount: (j['filler_word_count'] as num?)?.toInt() ?? 0,
-        fillerBreakdown: ((j['filler_breakdown'] as Map?) ?? const {})
-            .map((k, v) => MapEntry(k as String, (v as num).toInt())),
-      );
+    wordCount: (j['candidate_word_count'] as num?)?.toInt() ?? 0,
+    speakingSeconds: (j['speaking_seconds'] as num?)?.toDouble() ?? 0,
+    wordsPerMinute: (j['words_per_minute'] as num?)?.toDouble() ?? 0,
+    fillerWordCount: (j['filler_word_count'] as num?)?.toInt() ?? 0,
+    fillerBreakdown: ((j['filler_breakdown'] as Map?) ?? const {}).map(
+      (k, v) => MapEntry(k as String, (v as num).toInt()),
+    ),
+  );
 }
 
 class Scorecard {
@@ -97,11 +98,11 @@ class Scorecard {
   final String transcript;
 
   factory Scorecard.fromJson(Map<String, dynamic> j) => Scorecard(
-        mode: j['mode'] as String? ?? '',
-        assessment: Assessment.fromJson(_map(j['assessment'])),
-        metrics: SpeechMetrics.fromJson(_map(j['metrics'])),
-        transcript: j['transcript'] as String? ?? '',
-      );
+    mode: j['mode'] as String? ?? '',
+    assessment: Assessment.fromJson(_map(j['assessment'])),
+    metrics: SpeechMetrics.fromJson(_map(j['metrics'])),
+    transcript: j['transcript'] as String? ?? '',
+  );
 }
 
 List<String> _strings(Object? raw) =>

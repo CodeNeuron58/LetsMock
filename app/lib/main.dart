@@ -49,10 +49,9 @@ class HomeScreen extends StatelessWidget {
             Text(
               'The interviewer will call you, ask questions, and follow up. '
               'Answer out loud — you can interrupt it.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: Colors.black54),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
             ),
             const SizedBox(height: 16),
             const ResumeCard(),
@@ -66,7 +65,10 @@ class HomeScreen extends StatelessWidget {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    child: Text(mode.label, style: const TextStyle(fontSize: 16)),
+                    child: Text(
+                      mode.label,
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
                 ),
               ),

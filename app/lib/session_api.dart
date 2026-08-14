@@ -25,12 +25,12 @@ class SessionInfo {
   final int minutes; // length cap for this interview (free vs Pro)
 
   factory SessionInfo.fromJson(Map<String, dynamic> json) => SessionInfo(
-        url: json['url'] as String,
-        token: json['token'] as String,
-        room: json['room'] as String,
-        mode: json['mode'] as String,
-        minutes: (json['minutes'] as num?)?.toInt() ?? 5,
-      );
+    url: json['url'] as String,
+    token: json['token'] as String,
+    room: json['room'] as String,
+    mode: json['mode'] as String,
+    minutes: (json['minutes'] as num?)?.toInt() ?? 5,
+  );
 }
 
 /// The server refused because the free tier is used up — show the paywall.
@@ -75,9 +75,9 @@ class ResumeInfo {
   final int characters;
 
   factory ResumeInfo.fromJson(Map<String, dynamic> j) => ResumeInfo(
-        filename: j['filename'] as String? ?? 'resume.pdf',
-        characters: (j['characters'] as num?)?.toInt() ?? 0,
-      );
+    filename: j['filename'] as String? ?? 'resume.pdf',
+    characters: (j['characters'] as num?)?.toInt() ?? 0,
+  );
 }
 
 /// The resume on file, or null if none has been uploaded.
@@ -93,18 +93,27 @@ Future<ResumeInfo?> fetchResume() async {
 /// Upload a resume PDF. Throws with the server's message if it is unusable
 /// (wrong type, too big, or a scan with no text layer).
 Future<ResumeInfo> uploadResume(String path, String filename) async {
-  final req = http.MultipartRequest(
-    'POST',
-    Uri.parse('${AppConfig.backendBaseUrl}/resume'),
-  )
-    ..fields['user_id'] = await Subscriptions.userId()
-    ..files.add(await http.MultipartFile.fromPath('file', path,
-        filename: filename, contentType: MediaType('application', 'pdf')));
+  final req =
+      http.MultipartRequest(
+          'POST',
+          Uri.parse('${AppConfig.backendBaseUrl}/resume'),
+        )
+        ..fields['user_id'] = await Subscriptions.userId()
+        ..files.add(
+          await http.MultipartFile.fromPath(
+            'file',
+            path,
+            filename: filename,
+            contentType: MediaType('application', 'pdf'),
+          ),
+        );
 
   final res = await http.Response.fromStream(await req.send());
   if (res.statusCode != 200) {
     final detail = jsonDecode(res.body)['detail'];
-    throw Exception(detail is String ? detail : 'Upload failed (${res.statusCode}).');
+    throw Exception(
+      detail is String ? detail : 'Upload failed (${res.statusCode}).',
+    );
   }
   return ResumeInfo.fromJson(jsonDecode(res.body) as Map<String, dynamic>);
 }
@@ -141,7 +150,9 @@ Future<Scorecard> pollScorecard(
       throw const ScoringFailedException(); // status == failed
     }
     if (res.statusCode != 202) {
-      throw Exception('Scorecard request failed (${res.statusCode}): ${res.body}');
+      throw Exception(
+        'Scorecard request failed (${res.statusCode}): ${res.body}',
+      );
     }
     await Future<void>.delayed(interval); // 202: still scoring
   }

@@ -40,8 +40,9 @@ const _serverJson = '''
 
 void main() {
   test('parses a server scorecard', () {
-    final card =
-        Scorecard.fromJson(jsonDecode(_serverJson) as Map<String, dynamic>);
+    final card = Scorecard.fromJson(
+      jsonDecode(_serverJson) as Map<String, dynamic>,
+    );
 
     expect(card.mode, 'hr');
     expect(card.assessment.overallScore, 4.0);

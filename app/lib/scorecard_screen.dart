@@ -109,9 +109,21 @@ class _Report extends StatelessWidget {
         // Delivery — these numbers are measured, not judged by the model.
         Row(
           children: [
-            _Metric(label: 'Pace', value: '${m.wordsPerMinute.round()}', unit: 'wpm'),
-            _Metric(label: 'Fillers', value: '${m.fillerWordCount}', unit: 'words'),
-            _Metric(label: 'Spoken', value: '${(m.speakingSeconds / 60).round()}', unit: 'min'),
+            _Metric(
+              label: 'Pace',
+              value: '${m.wordsPerMinute.round()}',
+              unit: 'wpm',
+            ),
+            _Metric(
+              label: 'Fillers',
+              value: '${m.fillerWordCount}',
+              unit: 'words',
+            ),
+            _Metric(
+              label: 'Spoken',
+              value: '${(m.speakingSeconds / 60).round()}',
+              unit: 'min',
+            ),
           ],
         ),
         if (m.fillerBreakdown.isNotEmpty) ...[
@@ -131,11 +143,23 @@ class _Report extends StatelessWidget {
 
         const SizedBox(height: 24),
         if (a.strengths.isNotEmpty)
-          _Bullets(title: 'What worked', items: a.strengths, color: Colors.green.shade700),
+          _Bullets(
+            title: 'What worked',
+            items: a.strengths,
+            color: Colors.green.shade700,
+          ),
         if (a.weaknesses.isNotEmpty)
-          _Bullets(title: 'What to fix', items: a.weaknesses, color: Colors.orange.shade800),
+          _Bullets(
+            title: 'What to fix',
+            items: a.weaknesses,
+            color: Colors.orange.shade800,
+          ),
         if (a.redFlags.isNotEmpty)
-          _Bullets(title: 'Red flags', items: a.redFlags, color: Colors.red.shade700),
+          _Bullets(
+            title: 'Red flags',
+            items: a.redFlags,
+            color: Colors.red.shade700,
+          ),
 
         if (a.structureNote.isNotEmpty) ...[
           const SizedBox(height: 8),
@@ -143,7 +167,10 @@ class _Report extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Structure', style: TextStyle(fontWeight: FontWeight.w600)),
+                const Text(
+                  'Structure',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 6),
                 Text(a.structureNote, style: const TextStyle(height: 1.4)),
               ],
@@ -153,8 +180,10 @@ class _Report extends StatelessWidget {
 
         if (a.perAnswer.isNotEmpty) ...[
           const SizedBox(height: 28),
-          const Text('Answer by answer',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const Text(
+            'Answer by answer',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 12),
           for (final ans in a.perAnswer) _AnswerCard(answer: ans),
         ],
@@ -167,8 +196,10 @@ class _Report extends StatelessWidget {
               title: const Text('Full transcript'),
               childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               children: [
-                Text(scorecard.transcript,
-                    style: const TextStyle(fontSize: 13, height: 1.5)),
+                Text(
+                  scorecard.transcript,
+                  style: const TextStyle(fontSize: 13, height: 1.5),
+                ),
               ],
             ),
           ),
@@ -201,7 +232,10 @@ class _ScoreHero extends StatelessWidget {
               child: Text(
                 score.toStringAsFixed(1),
                 style: TextStyle(
-                    fontSize: 42, fontWeight: FontWeight.w700, color: color),
+                  fontSize: 42,
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                ),
               ),
             ),
           ),
@@ -234,11 +268,19 @@ class _Metric extends StatelessWidget {
         margin: const EdgeInsets.only(right: 8),
         child: Column(
           children: [
-            Text(value,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
-            Text(unit, style: const TextStyle(fontSize: 11, color: Colors.black45)),
+            Text(
+              value,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+            ),
+            Text(
+              unit,
+              style: const TextStyle(fontSize: 11, color: Colors.black45),
+            ),
             const SizedBox(height: 4),
-            Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12, color: Colors.black54),
+            ),
           ],
         ),
       ),
@@ -247,7 +289,11 @@ class _Metric extends StatelessWidget {
 }
 
 class _Bullets extends StatelessWidget {
-  const _Bullets({required this.title, required this.items, required this.color});
+  const _Bullets({
+    required this.title,
+    required this.items,
+    required this.color,
+  });
 
   final String title;
   final List<String> items;
@@ -260,8 +306,14 @@ class _Bullets extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: TextStyle(fontWeight: FontWeight.w700, color: color, fontSize: 15)),
+          Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: color,
+              fontSize: 15,
+            ),
+          ),
           const SizedBox(height: 6),
           for (final item in items)
             Padding(
@@ -270,7 +322,9 @@ class _Bullets extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('•  ', style: TextStyle(color: color)),
-                  Expanded(child: Text(item, style: const TextStyle(height: 1.4))),
+                  Expanded(
+                    child: Text(item, style: const TextStyle(height: 1.4)),
+                  ),
                 ],
               ),
             ),
@@ -296,8 +350,13 @@ class _AnswerCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Text(answer.question,
-                    style: const TextStyle(fontWeight: FontWeight.w600, height: 1.35)),
+                child: Text(
+                  answer.question,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    height: 1.35,
+                  ),
+                ),
               ),
               const SizedBox(width: 8),
               Container(
@@ -309,13 +368,19 @@ class _AnswerCard extends StatelessWidget {
                 child: Text(
                   answer.score.toStringAsFixed(1),
                   style: TextStyle(
-                      color: scoreColor(answer.score), fontWeight: FontWeight.w700),
+                    color: scoreColor(answer.score),
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          _Contrast(label: 'You said', text: answer.whatYouSaid, color: Colors.black54),
+          _Contrast(
+            label: 'You said',
+            text: answer.whatYouSaid,
+            color: Colors.black54,
+          ),
           const SizedBox(height: 8),
           _Contrast(
             label: 'A strong answer',
@@ -344,7 +409,11 @@ class _AnswerCard extends StatelessWidget {
 }
 
 class _Contrast extends StatelessWidget {
-  const _Contrast({required this.label, required this.text, required this.color});
+  const _Contrast({
+    required this.label,
+    required this.text,
+    required this.color,
+  });
 
   final String label;
   final String text;
@@ -355,9 +424,15 @@ class _Contrast extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label.toUpperCase(),
-            style: TextStyle(
-                fontSize: 10.5, fontWeight: FontWeight.w700, color: color, letterSpacing: 0.6)),
+        Text(
+          label.toUpperCase(),
+          style: TextStyle(
+            fontSize: 10.5,
+            fontWeight: FontWeight.w700,
+            color: color,
+            letterSpacing: 0.6,
+          ),
+        ),
         const SizedBox(height: 2),
         Text(text, style: const TextStyle(height: 1.4)),
       ],
@@ -366,7 +441,11 @@ class _Contrast extends StatelessWidget {
 }
 
 class _Card extends StatelessWidget {
-  const _Card({required this.child, this.margin = EdgeInsets.zero, this.padded = true});
+  const _Card({
+    required this.child,
+    this.margin = EdgeInsets.zero,
+    this.padded = true,
+  });
 
   final Widget child;
   final EdgeInsets margin;

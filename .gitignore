@@ -44,7 +44,9 @@ web/node_modules/
 web/dist/
 web/.astro/
 
-# ---- Design exports (source of truth for the UI, not part of the build) ----
+# ---- Design tool exports ----
+# Dropped in the repo root as reference while building a UI, then deleted.
+# Ignored so a fresh export never shows up as something to commit.
 *.dc.html
 support.js
 .thumbnail

@@ -4,20 +4,18 @@ import Base from "../layouts/Base.astro";
 // The billing toggle is two radios plus `has-[]` variants — no JavaScript, so
 // the page still ships nothing to the browser.
 const free = [
-  "2 interviews per month",
-  "HR / Behavioural and CS Fundamentals",
-  "Full delivery metrics",
-  "Score and red flags",
-  "Last 3 scorecards kept",
+  "Your first interview free, then one a week",
+  "All three rounds, including the Resume Grill",
+  "5 minutes per round",
+  "Full delivery metrics, score and red flags",
 ];
 
 const pro = [
   { text: "Unlimited interviews", strong: true },
-  { text: "Resume Grill on your uploaded PDF", strong: true },
+  { text: "15 minutes per round, not 5", strong: true },
   { text: "Answer-by-answer rewrites" },
   { text: "Full transcript per session" },
-  { text: "Progress across rounds over time" },
-  { text: "Unlimited scorecard history" },
+  { text: "Every scorecard kept in your history" },
 ];
 
 const campus = [
@@ -62,8 +60,8 @@ const toggle =
         Cheaper than one bad interview
       </h1>
       <p class="mx-auto mb-9 max-w-[32em] text-[18.5px] leading-[1.55] text-slate-700">
-        Every plan includes the full scorecard. Paid plans remove the interview limit and unlock the
-        Resume Grill.
+        Every plan includes the full scorecard and all three rounds. Pro removes the weekly limit and
+        triples how long a round can run.
       </p>
 
       <div class="inline-flex gap-0.5 rounded-full bg-paper-300 p-1">
@@ -79,7 +77,7 @@ const toggle =
           class:list={[
             toggle,
             "text-mist-700 group-has-[#annual:checked]:bg-ink-880 group-has-[#annual:checked]:text-paper-100 group-has-[#annual:checked]:shadow-sm hover:text-ink-880",
-          ]}>Yearly · 2 months free</label
+          ]}>Yearly · save a third</label
         >
       </div>
     </section>
@@ -124,11 +122,11 @@ const toggle =
         </div>
 
         <div class="flex items-baseline gap-2 group-has-[#annual:checked]:hidden">
-          <span class="font-mono text-[40px] tracking-[-0.03em]">₹399</span>
+          <span class="font-mono text-[40px] tracking-[-0.03em]">₹499</span>
           <span class="label text-[11px] tracking-[0.08em] text-mist-500">/ month</span>
         </div>
         <div class="hidden items-baseline gap-2 group-has-[#annual:checked]:flex">
-          <span class="font-mono text-[40px] tracking-[-0.03em]">₹3,999</span>
+          <span class="font-mono text-[40px] tracking-[-0.03em]">₹1,999</span>
           <span class="label text-[11px] tracking-[0.08em] text-mist-500">/ year</span>
         </div>
 

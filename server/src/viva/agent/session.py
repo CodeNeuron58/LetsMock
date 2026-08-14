@@ -12,6 +12,7 @@ from livekit.agents import (
     InterruptionOptions,
     TurnHandlingOptions,
 )
+from livekit.agents.vad import VAD
 from livekit.plugins import deepgram, groq, silero
 
 # Local, on-device turn detector: predicts whether the candidate is actually
@@ -23,8 +24,12 @@ from livekit.plugins.turn_detector.english import EnglishModel
 from viva.config import Settings
 
 
-def build_session(settings: Settings) -> AgentSession:
-    """Assemble the cascade with barge-in and patient turn-taking."""
+def build_session(settings: Settings, vad: VAD | None = None) -> AgentSession:
+    """Assemble the cascade with barge-in and patient turn-taking.
+
+    `vad` comes from the worker's prewarm step so the model isn't reloaded for
+    every interview; it falls back to loading here for standalone use.
+    """
     return AgentSession(
         # STT: Deepgram Nova-3 streaming. `filler_words` keeps the um/uh that
         # the scorecard counts; `keyterms` biases transcription toward interview
@@ -37,8 +42,7 @@ def build_session(settings: Settings) -> AgentSession:
         ),
         llm=groq.LLM(model=settings.llm_model),
         tts=deepgram.TTS(model=settings.tts_model),
-        vad=silero.VAD.load(),
-        # TODO(week1): move VAD load into a prewarm_fnc so it isn't loaded per job.
+        vad=vad or silero.VAD.load(),
         turn_handling=TurnHandlingOptions(
             turn_detection=EnglishModel(),
             # Dynamic endpointing: waits longer when the turn detector is unsure

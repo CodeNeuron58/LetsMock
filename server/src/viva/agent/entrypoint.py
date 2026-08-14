@@ -33,7 +33,8 @@ async def entrypoint(ctx: JobContext) -> None:
         "starting interview room=%s mode=%s minutes=%d", ctx.room.name, mode.key.value, minutes
     )
 
-    session = build_session(settings)
+    # Reuse the VAD the worker loaded during prewarm (see agent.py).
+    session = build_session(settings, vad=ctx.proc.userdata.get("vad"))
 
     # Record the conversation as it happens, then score it once the call ends.
     recorder = TranscriptRecorder()
@@ -55,7 +56,11 @@ async def entrypoint(ctx: JobContext) -> None:
     # Give the interview an ending: wrap up near the cap, then shut down (which
     # is what kicks off scoring). Runs in the background so hanging up still
     # works normally; the task is cancelled with the job.
-    asyncio.create_task(
+    #
+    # The reference is deliberate: asyncio only holds a weak reference to running
+    # tasks, so a bare create_task() can be garbage-collected mid-interview and
+    # the clock would silently never fire.
+    clock = asyncio.create_task(
         run_interview_clock(
             session,
             interviewer,
@@ -64,11 +69,15 @@ async def entrypoint(ctx: JobContext) -> None:
             on_finished=lambda: ctx.shutdown("interview complete"),
         )
     )
+    ctx.add_shutdown_callback(lambda: _cancel(clock))
 
 
-async def _score_interview(
-    recorder: TranscriptRecorder, mode: InterviewMode, room: str
-) -> None:
+async def _cancel(task: asyncio.Task[None]) -> None:
+    """Stop the interview clock when the candidate hangs up first."""
+    task.cancel()
+
+
+async def _score_interview(recorder: TranscriptRecorder, mode: InterviewMode, room: str) -> None:
     """Build the scorecard after the call and store it for the client to fetch.
 
     Runs during job shutdown, so it must never raise — a failed scorecard should

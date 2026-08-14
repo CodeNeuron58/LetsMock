@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import logging
+from functools import lru_cache
 
 from groq import Groq
 from pydantic import ValidationError
@@ -38,6 +39,13 @@ Return ONLY a JSON object matching this schema exactly (no prose, no markdown):
 {schema}"""
 
 
+@lru_cache
+def _client() -> Groq:
+    """One client per process — it holds a connection pool, so building a fresh
+    one for every scorecard throws that away."""
+    return Groq(api_key=get_settings().groq_api_key)
+
+
 def generate_scorecard(transcript: Transcript, mode: InterviewMode) -> Scorecard:
     """Full pipeline: metrics (code) + assessment (LLM) -> Scorecard."""
     metrics = compute_metrics(transcript)
@@ -58,8 +66,6 @@ def _assess(
     retries: int = 1,
 ) -> Assessment:
     """Ask the LLM for the qualitative assessment as schema-validated JSON."""
-    settings = get_settings()
-    client = Groq(api_key=settings.groq_api_key)
     user = _USER_TEMPLATE.format(
         mode_name=mode.display_name,
         mode_focus=mode.focus,
@@ -76,8 +82,8 @@ def _assess(
 
     last_error: Exception | None = None
     for attempt in range(retries + 1):
-        resp = client.chat.completions.create(
-            model=settings.scorecard_model,
+        resp = _client().chat.completions.create(
+            model=get_settings().scorecard_model,
             messages=messages,
             response_format={"type": "json_object"},
             temperature=0.3,
@@ -90,6 +96,9 @@ def _assess(
             logger.warning("scorecard JSON invalid (attempt %d): %s", attempt, e)
             messages += [
                 {"role": "assistant", "content": content},
-                {"role": "user", "content": f"That JSON was invalid: {e}. Return corrected JSON only."},
+                {
+                    "role": "user",
+                    "content": f"That JSON was invalid: {e}. Return corrected JSON only.",
+                },
             ]
     raise RuntimeError(f"scorecard generation failed after {retries + 1} attempts: {last_error}")

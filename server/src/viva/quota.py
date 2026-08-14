@@ -12,7 +12,7 @@ daily free tier could cost more per user than Pro earns. See `TODO.md` ->
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from viva.storage.store import count_interviews, last_interview_at
 
@@ -47,10 +47,10 @@ def check_quota(user_id: str | None, is_pro: bool) -> QuotaDecision:
 
     # Rows written before timezone handling (or by SQLite) can come back naive.
     if last.tzinfo is None:
-        last = last.replace(tzinfo=timezone.utc)
+        last = last.replace(tzinfo=UTC)
 
     next_available = last + FREE_WINDOW
-    if datetime.now(timezone.utc) >= next_available:
+    if datetime.now(UTC) >= next_available:
         return QuotaDecision(allowed=True, minutes=FREE_MOCK_MINUTES)
 
     return QuotaDecision(

@@ -1,7 +1,7 @@
 """List stored interviews and their scorecards.
 
-    uv run python interviews.py            # one line per interview
-    uv run python interviews.py <room>     # full scorecard for one interview
+uv run python interviews.py            # one line per interview
+uv run python interviews.py <room>     # full scorecard for one interview
 """
 
 import sys
@@ -52,10 +52,15 @@ def _show_one(rows: list[Interview], room: str) -> None:
     a, m = sc.assessment, sc.metrics
     print(f"=== {room} ({sc.mode}) — {a.overall_score:.1f}/10 ===\n")
     print(f"{a.summary}\n")
-    print(f"pace {m.words_per_minute:.0f} wpm | {m.filler_word_count} fillers "
-          f"{m.filler_breakdown} | {m.candidate_word_count} words\n")
-    for label, items in (("Strengths", a.strengths), ("Weaknesses", a.weaknesses),
-                         ("Red flags", a.red_flags)):
+    print(
+        f"pace {m.words_per_minute:.0f} wpm | {m.filler_word_count} fillers "
+        f"{m.filler_breakdown} | {m.candidate_word_count} words\n"
+    )
+    for label, items in (
+        ("Strengths", a.strengths),
+        ("Weaknesses", a.weaknesses),
+        ("Red flags", a.red_flags),
+    ):
         if items:
             print(f"{label}:")
             for i in items:

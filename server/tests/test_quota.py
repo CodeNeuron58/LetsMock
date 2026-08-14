@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from viva.quota import check_quota
 from viva.storage.models import Interview, new_session
@@ -28,7 +28,7 @@ def test_second_interview_in_the_same_week_is_blocked():
 def test_free_interview_returns_after_the_window():
     create_interview("viva-hr-1", "hr", user_id="user_A")
     with new_session() as db:
-        db.get(Interview, "viva-hr-1").created_at = datetime.now(timezone.utc) - timedelta(days=8)
+        db.get(Interview, "viva-hr-1").created_at = datetime.now(UTC) - timedelta(days=8)
         db.commit()
 
     assert check_quota("user_A", is_pro=False).allowed

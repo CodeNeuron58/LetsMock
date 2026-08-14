@@ -8,7 +8,7 @@ already knows it from `POST /session`, so no extra id has to be passed around.
 from __future__ import annotations
 
 import enum
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import lru_cache
 from typing import Any
 
@@ -40,7 +40,7 @@ class Interview(Base):
         Enum(InterviewStatus), default=InterviewStatus.pending
     )
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
     scored_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=None)
     # Full Scorecard as JSON — the schema is owned by Pydantic, not the database.
@@ -59,7 +59,7 @@ class Resume(Base):
     filename: Mapped[str] = mapped_column(String(255))
     text: Mapped[str] = mapped_column(Text)
     uploaded_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
 
 

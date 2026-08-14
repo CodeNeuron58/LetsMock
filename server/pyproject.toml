@@ -38,6 +38,15 @@ packages = ["src/viva"]
 line-length = 100
 src = ["src"]
 
+[tool.ruff.lint]
+# E402 (imports not at top) is checked so the `noqa`s in the entrypoints stay
+# honest: those files must call load_dotenv() before importing anything that
+# reads the environment.
+extend-select = ["E402"]
+# FastAPI's dependency injection *requires* `Depends()`/`File()`/`Form()` in
+# argument defaults, which is exactly what B008 forbids.
+ignore = ["B008"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 # The bundled starlette test client still imports httpx; nothing we control.

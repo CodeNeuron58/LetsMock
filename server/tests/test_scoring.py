@@ -49,7 +49,7 @@ def test_filler_words_are_counted_and_broken_down():
 
 
 def test_like_is_only_a_filler_when_it_is_set_off_by_a_pause():
-    """"tools like LangGraph" is a comparison; ", like," is a verbal tic. An
+    """ "tools like LangGraph" is a comparison; ", like," is a verbal tic. An
     inflated filler count is worse than a missed one — the candidate can count
     their own 'like's and will stop trusting the scorecard."""
     transcript = Transcript(
@@ -71,7 +71,9 @@ def test_pace_sums_every_burst_of_an_answer():
     the last burst inflates words-per-minute to impossible values."""
     transcript = Transcript(
         turns=[
-            Turn(role="candidate", start=0, end=60, speech_seconds=40.0, text=" ".join(["word"] * 80))
+            Turn(
+                role="candidate", start=0, end=60, speech_seconds=40.0, text=" ".join(["word"] * 80)
+            )
         ]
     )
 

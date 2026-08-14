@@ -1,8 +1,9 @@
 """Typed settings loaded from the environment / .env.
 
-`console` mode only needs the Groq + Deepgram keys (STT/LLM/TTS still hit the
-cloud); the LiveKit credentials are only required once a real client connects,
-so they are optional here and the LiveKit worker validates them itself.
+The LiveKit fields are optional here because this module is imported by tooling
+that never connects. Note that `agent.py console` still needs them *set* to
+something — the worker builds a LiveKit API client on startup even though it
+never dials out — so `.env.example` ships dummy values for them.
 """
 
 from __future__ import annotations
@@ -87,7 +88,7 @@ class Settings(BaseSettings):
             "Python",
             "TypeScript",
             "Yumii",
-            "Viva",
+            "LetsMock",
             "startup",
         ]
     )
@@ -99,9 +100,6 @@ class Settings(BaseSettings):
     min_endpointing_delay: float = 0.5
     max_endpointing_delay: float = 6.0
     min_interruption_duration: float = 0.5
-
-    # Which interview to run (until the client picks one per-session).
-    default_mode: str = "hr"
 
     # Where interviews and scorecards are stored. SQLite by default so there is
     # nothing to run locally; point at Postgres in production

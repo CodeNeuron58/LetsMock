@@ -1,12 +1,13 @@
 """FastAPI app that mints LiveKit access tokens so a client can join an interview.
 
 Client flow:
-  1. POST /session {"mode": "hr"}   -> {url, token, room, mode}
+  1. POST /session {"mode", "user_id", "is_pro"} -> {url, token, room, mode, minutes}
   2. Client connects to `url` with `token`, joining `room`.
   3. The agent worker (`agent.py dev`) is dispatched into that room and interviews.
 
-The mode is encoded in the room name (viva-<mode>-<id>); the agent reads it back
-via `mode_from_room_name`, so no separate metadata channel is needed yet.
+Both the mode and the length cap ride in the room name (viva-<mode>-<minutes>-<id>)
+and the agent reads them back with `parse_room_name`, so the two processes need
+no channel between them beyond the room itself.
 """
 
 from __future__ import annotations
@@ -31,7 +32,7 @@ from viva.storage import (
     save_resume,
 )
 
-app = FastAPI(title="Viva API")
+app = FastAPI(title="LetsMock API")
 
 
 class SessionRequest(BaseModel):

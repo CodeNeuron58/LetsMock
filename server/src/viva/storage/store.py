@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import func, select
 
@@ -37,7 +37,7 @@ def save_resume(user_id: str, filename: str, text: str) -> None:
         else:
             resume.filename = filename
             resume.text = text
-            resume.uploaded_at = datetime.now(timezone.utc)
+            resume.uploaded_at = datetime.now(UTC)
         db.commit()
 
 
@@ -57,18 +57,19 @@ def get_interview_resume(room: str) -> str | None:
 
 def count_interviews(user_id: str) -> int:
     with new_session() as db:
-        return db.scalar(
-            select(func.count()).select_from(Interview).where(Interview.user_id == user_id)
-        ) or 0
+        return (
+            db.scalar(
+                select(func.count()).select_from(Interview).where(Interview.user_id == user_id)
+            )
+            or 0
+        )
 
 
 def last_interview_at(user_id: str) -> datetime | None:
     """When this user last *started* an interview (started, not finished —
     otherwise an abandoned call would be a free retry)."""
     with new_session() as db:
-        return db.scalar(
-            select(func.max(Interview.created_at)).where(Interview.user_id == user_id)
-        )
+        return db.scalar(select(func.max(Interview.created_at)).where(Interview.user_id == user_id))
 
 
 def save_scorecard(room: str, scorecard: Scorecard) -> None:
@@ -85,7 +86,7 @@ def save_scorecard(room: str, scorecard: Scorecard) -> None:
             db.add(interview)
         interview.scorecard = scorecard.model_dump(mode="json")
         interview.status = InterviewStatus.scored
-        interview.scored_at = datetime.now(timezone.utc)
+        interview.scored_at = datetime.now(UTC)
         db.commit()
 
 
